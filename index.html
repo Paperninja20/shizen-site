@@ -12,9 +12,14 @@
 <meta property="og:url" content="https://paperninja20.github.io/shizen-site/">
 <!-- Absolute, because link unfurlers do not resolve a relative one. Swap the
      host here and in og:url when a real domain is pointed at the page.
-     TODO: og-card.png itself does not exist yet - 1200x630. Until it does,
-     this URL 404s and the link unfurls as bare text. -->
-<meta property="og:image" content="https://paperninja20.github.io/shizen-site/assets/img/og-card.png">
+
+     VERSIONED FILENAME, on purpose. Discord (and X, and iMessage) cache the
+     card on their own proxies keyed by this URL, for days. Replacing the
+     bytes at a fixed name leaves everyone looking at the old picture with no
+     way to tell it is stale - which is exactly what happened to og-card.png.
+     Bump the -vN when the artwork changes; a new URL is one they have never
+     fetched. -->
+<meta property="og:image" content="https://paperninja20.github.io/shizen-site/assets/img/og-card-v2.png">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">

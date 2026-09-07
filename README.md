@@ -44,6 +44,12 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    python3 site/tools/check-og-card.py   # prove the margin still holds
    ```
 
+   **The filename is versioned (`og-card-v2.png`) on purpose.** Discord, X and
+   iMessage cache the card on their own proxies keyed by that URL, for days -
+   replacing the bytes at a fixed name leaves everyone looking at the old
+   picture with no way to tell it is stale. When the artwork changes, bump the
+   `-vN` in both the filename and `og:image`, and in `tools/make-og-card.sh`.
+
    The checker enforces a 15px border with no art in it, and that nothing is
    cropped. It measures rather than trusts the CSS: the card is rendered twice,
    once with `img.art` hidden, and the difference IS the art wherever it
