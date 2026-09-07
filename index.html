@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shizen — a generative sampler you paint</title>
+<meta name="description" content="Shizen is a generative sampler for macOS and Windows. Drop one-shots onto fish, let them swim, and they play themselves — always in your key. VST3, AU and standalone.">
+
+<meta property="og:title" content="Shizen — a generative sampler you paint">
+<meta property="og:description" content="Drop one-shots onto fish, let them swim, and they play themselves — always in your key.">
+<meta property="og:type" content="product">
+<!-- TODO: absolute URL once the domain is live -->
+<meta property="og:image" content="assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================================================
+   Shizen — landing page
+
+   The palette, the paper and the artwork are lifted straight from the
+   plugin (plugins/Nagare/Source/ui/public), so the page and the product
+   read as one thing.
+
+   The typeface is the plugin's own "omake" - but as OUTLINES, never as a
+   webfont. Its licence grants commercial USE freely and separately forbids
+   二次配布, redistribution of the font DATA; @font-face is the second thing,
+   since it sends omakebold.woff2 to every visitor however the page is paid
+   for. Text converted to paths is derived artwork rather than font data - the
+   same footing any logo drawn in a licensed face stands on - so the headings
+   are genuine omake and no font file is served.
+
+   site/tools/make-type.py generates them. Everything still set as live text
+   is Zen Kurenaido (SIL OFL, Google Fonts).
+   =========================================================================== */
+
+:root {
+  /* Straight from the plugin's own :root. */
+  --paper-base:    #f3ead9;
+  --paper-scene:   #f7f2e9;
+  --paper-shadow:  #e7d9c1;
+  --paper-fiber:   #d9c6a3;
+  --ink:           #332c23;
+  --ink-soft:      #4f4536;
+  --wash-green:    #a7c19d;
+  --wash-pink:     #dcb1ac;
+  --wash-lavender: #c3b7d6;
+  --seal-red:      #b1543c;
+  --gold-thread:   #c8a05e;
+
+  /* One live face, not two. The display HEADINGS are omake outlines now
+     (site/tools/make-type.py), so the other face was left setting only the small bits -
+     h3, the price, the FAQ summaries - and a third face on the page for
+     that was one more than it needed. Zen Kurenaido carries them instead:
+     it is the closer match to omake, and dropping the other saves a family
+     off the font request. */
+  --font-display: 'Zen Kurenaido', 'Avenir Next', system-ui, sans-serif;
+  --font-body:    'Zen Kurenaido', 'Avenir Next', system-ui, sans-serif;
+
+  --measure: 62ch;
+  --gutter: clamp(20px, 5vw, 64px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: clamp(16px, 1.05vw + 13px, 19px);
+  line-height: 1.72;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+
+  /* The pond's own sheet, recipe for recipe (.pond-canvas in the plugin):
+     --paper-scene under four soft watercolour blooms - blue, pink, green,
+     lavender - with the paper grain multiplied over the top by ::before.
+
+     Two changes, both so it behaves as a PAGE rather than a fixed 1070x580
+     canvas. The blooms are sized in percentages rather than the plugin's
+     pixels, so they hold their proportions at any width; and the whole thing
+     is `fixed`, so a long page scrolls over one continuous sheet instead of
+     repeating the wash every screenful.
+
+     washi-tile.png is NOT among these layers. It is an opaque neutral grey
+     grain map (average 236,236,236), so laid down flat it buries everything
+     above under grey - which is exactly what the first pass did. The plugin
+     multiplies it from a separate .paper-grain layer, and so does ::before. */
+  background-color: var(--paper-scene);
+  background-image:
+    radial-gradient(ellipse 30% 38% at 14% 22%, rgba(159,192,209,0.22), transparent 68%),
+    radial-gradient(ellipse 26% 34% at 78% 30%, rgba(220,177,172,0.16), transparent 70%),
+    radial-gradient(ellipse 28% 36% at 55% 78%, rgba(167,193,157,0.18), transparent 70%),
+    radial-gradient(ellipse 22% 31% at 90% 85%, rgba(195,183,214,0.14), transparent 70%);
+  background-attachment: fixed;
+}
+
+/* The paper grain, multiplied over the cream so the hue survives and only
+   the fibre darkens. Pinned, so the grain sits still while the page moves
+   under it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("assets/img/washi-tile.png");
+  background-size: 512px 512px;
+  /* No opacity, matching .paper-grain in the plugin: the tile is pale
+     enough (average 236,236,236) that a full multiply is already subtle,
+     and dialling it back was this page guessing where the plugin does not. */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wrap { width: min(1120px, 100%); margin-inline: auto; padding-inline: var(--gutter); }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.24; margin: 0 0 0.5em; }
+
+/* Headings are omake outlines - see site/tools/make-type.py. The SVG carries
+   its own width/height, which IS the design size; max-width only bites when
+   the column is narrower than that. */
+h1 img, h2 img, .wordmark img { display: block; max-width: 100%; height: auto; }
+.wordmark { align-items: center; }
+.wordmark img { margin-bottom: -2px; }
+h1 { font-size: clamp(2.4rem, 6vw, 4.1rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
+h3 { font-size: 1.16rem; margin-bottom: 0.35em; }
+p  { margin: 0 0 1.1em; max-width: var(--measure); }
+a  { color: var(--seal-red); }
+
+.lede { font-size: 1.16em; color: var(--ink-soft); }
+.muted { color: var(--ink-soft); }
+.small { font-size: 0.86em; line-height: 1.6; }
+
+/* --- header ------------------------------------------------------------- */
+.site-head {
+  position: relative; z-index: 3;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+  padding-block: 22px;
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink); text-decoration: none;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.wordmark small {
+  font-family: var(--font-body);
+  font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.site-nav { display: flex; gap: clamp(14px, 2.4vw, 30px); align-items: center; }
+.site-nav a {
+  color: var(--ink-soft); text-decoration: none; font-size: 0.92rem;
+  border-bottom: 1.5px solid transparent; padding-bottom: 2px;
+}
+.site-nav a:hover { color: var(--ink); border-bottom-color: var(--seal-red); }
+@media (max-width: 620px) { .site-nav .hide-sm { display: none; } }
+
+/* --- buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 1.02rem; line-height: 1;
+  padding: 16px 30px;
+  border-radius: 3px;
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 130ms ease, box-shadow 130ms ease, background-color 130ms ease;
+}
+.btn-buy {
+  background: var(--seal-red); color: #fdf8ef;
+  box-shadow: 0 3px 0 rgba(120,52,36,0.55);
+}
+.btn-buy:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(120,52,36,0.55); }
+.btn-buy:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(120,52,36,0.55); }
+.btn-ghost { border-color: var(--paper-fiber); color: var(--ink); background: transparent; }
+.btn-ghost:hover { border-color: var(--ink-soft); }
+@media (prefers-reduced-motion: reduce) { .btn:hover, .btn:active { transform: none; } }
+
+/* --- hero --------------------------------------------------------------- */
+.hero {
+  position: relative; z-index: 2;
+  display: grid; gap: clamp(28px, 5vw, 56px);
+  grid-template-columns: 1fr;
+  padding-block: clamp(28px, 6vw, 68px) clamp(40px, 8vw, 96px);
+  align-items: center;
+}
+@media (min-width: 900px) { .hero { grid-template-columns: 1.02fr 1fr; } }
+
+.hero .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 26px; }
+.price-note { font-size: 0.9rem; color: var(--ink-soft); }
+/* Directly under the name, tight, so the two read as one lockup. The pull-up
+   is this large because each SVG carries a full 1.24 line-box of its own -
+   the viewBox is line-height tall, not cap-height tall - so the visual gap
+   is bigger than the margins suggest. */
+.tagline { margin: -1.1rem 0 1.4rem; }
+.tagline img { display: block; max-width: 100%; height: auto; }
+.formats {
+  margin-top: 22px; font-size: 0.84rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+
+/* The pond. Real sprites from the plugin, laid out the way they sit in it. */
+.pond {
+  position: relative;
+  aspect-ratio: 1070 / 700;
+  /* Its own blooms, in the plugin's original pixel proportions. The page
+     behind it is now the same sheet, so without these the frame would read
+     as a blank rectangle cut out of the wash. */
+  background:
+    radial-gradient(ellipse 30% 38% at 14% 22%, rgba(159,192,209,0.26), transparent 68%),
+    radial-gradient(ellipse 26% 34% at 78% 30%, rgba(220,177,172,0.20), transparent 70%),
+    radial-gradient(ellipse 28% 36% at 55% 78%, rgba(167,193,157,0.22), transparent 70%),
+    radial-gradient(ellipse 22% 31% at 90% 85%, rgba(195,183,214,0.18), transparent 70%),
+    var(--paper-scene);
+  border: 1.5px solid var(--paper-fiber);
+  border-radius: 4px;
+  box-shadow: 0 14px 34px rgba(80,64,44,0.13), inset 0 0 60px rgba(217,198,163,0.28);
+  overflow: hidden;
+}
+.pond img { position: absolute; user-select: none; -webkit-user-drag: none; }
+.pond .ripple { inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+.pond .plant { bottom: 4%; }
+.pond .fish { will-change: transform; }
+
+.p-coral   { left: 6%;  width: 21%; }
+.p-anemone { left: 68%; width: 19%; }
+.p-grass   { left: 38%; width: 17%; bottom: 1%; }
+.f-koi     { left: 20%; top: 26%; width: 20%; transform: rotate(-7deg); }
+.f-betta   { left: 52%; top: 15%; width: 17%; transform: rotate(5deg) scaleX(-1); }
+.f-tile    { left: 60%; top: 52%; width: 16%; transform: rotate(-3deg); }
+.f-tetra   { left: 12%; top: 58%; width: 14%; transform: rotate(8deg) scaleX(-1); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pond .fish { animation: drift 9s ease-in-out infinite; }
+  .f-betta { animation-duration: 11s; animation-delay: -3s; }
+  .f-tile  { animation-duration: 13s; animation-delay: -6s; }
+  .f-tetra { animation-duration: 10s; animation-delay: -1.5s; }
+  @keyframes drift {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 3% -4%; }
+  }
+}
+
+/* --- generic section ---------------------------------------------------- */
+section { position: relative; z-index: 2; }
+.band { padding-block: clamp(44px, 6vw, 82px); }
+.band + .band { border-top: 1.5px solid rgba(217,198,163,0.55); }
+.band-head { max-width: var(--measure); margin-bottom: clamp(28px, 4vw, 52px); }
+.eyebrow {
+  font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--seal-red); margin-bottom: 10px;
+}
+
+/* --- steps -------------------------------------------------------------- */
+.steps { display: grid; gap: clamp(24px, 3.4vw, 44px); grid-template-columns: 1fr; counter-reset: step; }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+.step { counter-increment: step; }
+.step h3::before {
+  content: counter(step);
+  font-family: var(--font-display);
+  display: inline-grid; place-items: center;
+  width: 30px; height: 30px; margin-right: 10px;
+  border: 1.5px solid var(--seal-red); border-radius: 50%;
+  color: var(--seal-red); font-size: 0.92rem;
+  vertical-align: -6px;
+}
+.step p { font-size: 0.97em; }
+
+/* --- fish types --------------------------------------------------------- */
+.types { display: grid; gap: clamp(20px, 3vw, 30px); grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 620px) { .types { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 940px) { .types { grid-template-columns: repeat(5, 1fr); } }
+/* No card. The fish sit straight on the paper, the way they do in the pond -
+   a box around each one made them read as products in a catalogue. */
+.type { text-align: center; }
+
+/* The art GROWS rather than being transform-scaled, and .art holds the layout
+   box still so the heading below it does not move.
+   
+   Not a stylistic choice - it is the fix the plugin already carries, at
+   index.html:12414: "A filtered element that is ALSO transform-scaled can be
+   rasterised at its unscaled bounds and then blown up, which clips the shadow
+   into a straight-edged rectangle." That is the grey box reported here, and
+   the same note says why it was hard to catch: "visible only while hovering
+   AND moving, which is why neither a static Chrome nor a static WebKit render
+   reproduced it" - a forced-hover headless render of this page draws the
+   shadow correctly. It needs the transition running on a composited layer.
+   
+   So the filtered element carries no transform at all, exactly as the pond
+   resizes its <svg> rather than scaling it. */
+/* The art grows on hover and nothing else happens.
+   
+   If a shadow is ever wanted back, it is a radial-gradient on the ground -
+   .fish-rest-shadow in the plugin - and NOT filter: drop-shadow. That was
+   tried three ways here and drew a rectangle every time: on the scaled
+   <img>, on the growing <img> (correct for half a second, then a box), and
+   on a static wrapper (correct at the ends of a row, boxed in the middle).
+   None of it reproduces in a static headless render, so it can only be
+   judged in a live browser - which is why the note is worth keeping even
+   with the shadow gone. */
+.type .art, .corals .art {
+  display: block; position: relative;
+  margin-inline: auto;
+}
+.type .art { height: 92px; max-width: 150px; margin-bottom: 12px; }
+/* Centred by translate, not by `inset: 0; margin: auto`.
+   
+   Measured: with auto margins the art grew RIGHTWARD, its centre moving by
+   exactly half the width it gained - koi 188.0 -> 198.0, coral 212.4 ->
+   219.4 - while the betta, alone, stayed put. The betta is the only sprite
+   narrower than its .art box, and that is the whole explanation: when an
+   absolutely positioned box with left:0/right:0 grows WIDER than its
+   container the margins can no longer both be auto, so they resolve to 0
+   and the box anchors to the left edge (CSS 2.1 10.3.7). Every other sprite
+   exactly fills .art at rest, so every other sprite overflowed rightward.
+   
+   translate(-50%, -50%) centres on the element's own size, so it holds
+   however far past .art the art grows. Safe to use a transform here now:
+   nothing on this page carries a filter any more. */
+.type img, .corals img {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto; height: auto;
+  transition: max-width 180ms ease, max-height 180ms ease;
+}
+.type img { max-width: 150px; max-height: 92px; }
+.type:hover img { max-width: 170px; max-height: 104px; }
+@media (prefers-reduced-motion: reduce) {
+  .type img, .corals img { transition: none; }
+}
+.type p { font-size: 0.9em; margin: 0; color: var(--ink-soft); max-width: none; }
+
+/* --- the reef ----------------------------------------------------------- */
+.corals {
+  display: grid; gap: clamp(18px, 2.8vw, 34px);
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 640px) { .corals { grid-template-columns: repeat(4, 1fr); } }
+.corals figure { margin: 0; text-align: center; }
+.corals .art { height: 104px; max-width: 132px; }
+.corals img { max-width: 132px; max-height: 104px; }
+.corals figure:hover img { max-width: 146px; max-height: 115px; }
+.corals figcaption {
+  margin-top: 8px;
+  font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+/* --- two modes ---------------------------------------------------------- */
+.modes {
+  display: grid; gap: clamp(26px, 4vw, 58px);
+  grid-template-columns: 1fr; max-width: 880px;
+}
+@media (min-width: 720px) { .modes { grid-template-columns: 1fr 1fr; } }
+.mode h3 { margin: 0 0 0.15em; }
+.mode h3 img { display: block; max-width: 100%; height: auto; }
+.mode-sub { font-size: 1em; color: var(--ink-soft); margin: 0 0 18px; }
+
+/* Sized to the plugin window, 1100x800, since a recording of a mode is most
+   likely the whole thing. Change the ratio here if it is the pond alone. */
+.mode-media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 11 / 8;
+  border-radius: 4px;
+  background: var(--paper-scene);
+  object-fit: cover;
+}
+.mode-media.is-empty {
+  border: 1.5px dashed var(--paper-fiber);
+  display: grid; place-items: center;
+  color: var(--ink-soft); text-align: center; padding: 16px;
+}
+
+/* --- demo --------------------------------------------------------------- */
+.demo-frame {
+  aspect-ratio: 16 / 9;
+  background: var(--paper-scene);
+  border: 1.5px dashed var(--paper-fiber);
+  border-radius: 4px;
+  display: grid; place-items: center;
+  text-align: center; padding: 24px;
+  color: var(--ink-soft);
+}
+.demo-frame iframe { width: 100%; height: 100%; border: 0; border-radius: 3px; }
+
+/* --- pricing ------------------------------------------------------------ */
+.buy-card {
+  background: var(--paper-scene);
+  border: 1.5px solid var(--paper-fiber);
+  border-radius: 4px;
+  padding: clamp(28px, 5vw, 52px);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(80,64,44,0.09);
+  max-width: 620px; margin-inline: auto;
+}
+.price { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 4.4rem); line-height: 1; margin: 4px 0 6px; }
+.buy-card ul { list-style: none; padding: 0; margin: 26px auto 30px; max-width: 400px; text-align: left; }
+.buy-card li { padding-left: 26px; position: relative; margin-bottom: 9px; font-size: 0.96em; }
+.buy-card li::before { content: "—"; position: absolute; left: 0; color: var(--seal-red); }
+
+/* --- specs + faq -------------------------------------------------------- */
+.cols { display: grid; gap: clamp(24px, 4vw, 52px); grid-template-columns: 1fr; }
+@media (min-width: 780px) { .cols { grid-template-columns: 1fr 1fr; } }
+.spec-list { margin: 0; }
+.spec-list dt { font-weight: 600; font-family: var(--font-display); margin-top: 16px; }
+.spec-list dd { margin: 2px 0 0; color: var(--ink-soft); font-size: 0.95em; }
+.spec-list dd em { font-style: normal; color: var(--ink); }
+.spec-list dt:first-child { margin-top: 0; }
+
+/* --- the changelog ------------------------------------------------------ */
+.changelog { list-style: none; margin: 0; padding: 0; }
+.changelog li {
+  padding: 11px 0;
+  border-top: 1px solid rgba(217,198,163,0.7);
+}
+.changelog li:first-child { border-top: 0; padding-top: 0; }
+.cl-head { display: flex; align-items: baseline; gap: 10px; }
+.cl-ver {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+.cl-date {
+  font-size: 0.76rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-soft); opacity: 0.8;
+}
+.cl-what {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.93em; line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* --- footer ------------------------------------------------------------- */
+.site-foot {
+  position: relative; z-index: 2;
+  border-top: 1.5px solid rgba(217,198,163,0.7);
+  padding-block: 34px 48px;
+  display: flex; flex-wrap: wrap; gap: 16px;
+  justify-content: space-between; align-items: center;
+  font-size: 0.86rem; color: var(--ink-soft);
+}
+.site-foot a { color: var(--ink-soft); }
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+  <header class="site-head">
+    <a class="wordmark" href="#top"><picture><source media="(max-width: 700px)" srcset="assets/type/wordmark-narrow.svg"><img src="assets/type/wordmark-wide.svg" alt="Shizen"></picture> <small>Jayu Beats</small></a>
+    <nav class="site-nav">
+      <a href="#how" class="hide-sm">How it works</a>
+      <a href="#sound" class="hide-sm">Sound</a>
+      <a href="#specs" class="hide-sm">Requirements</a>
+      <a href="#buy">Buy</a>
+    </nav>
+  </header>
+</div>
+
+<main id="top">
+
+  <!-- ================= hero ================= -->
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-copy">
+        <h1><picture><source media="(max-width: 700px)" srcset="assets/type/h1-hero-narrow.svg"><img src="assets/type/h1-hero-wide.svg" alt="A pond that plays itself."></picture></h1>
+        <p class="tagline"><picture><source media="(max-width: 700px)" srcset="assets/type/hero-tagline-narrow.svg"><img src="assets/type/hero-tagline-wide.svg" alt="a pond that plays itself."></picture></p>
+        <p class="lede">
+          Add your samples and let the rhythms and harmonies of nature speak
+          for itself.
+        </p>
+
+        <div class="cta-row">
+          <!-- The live Lemon Squeezy checkout. `?embed=1`, plus lemon.js at
+               the foot of the page, opens it as an overlay rather than
+               navigating away - the buyer never leaves this page.
+               The price appears here, on the buy card's heading and on its
+               button - all three have to match the variant, or the overlay
+               opens at a different number than the one that was clicked. -->
+          <a class="btn btn-buy lemonsqueezy-button"
+             href="https://jayubeats.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0">
+            Buy Shizen — $49.99
+          </a>
+          <a class="btn btn-ghost" href="#sound">Hear it first</a>
+        </div>
+        <p class="price-note">One-time purchase. Free updates. No subscription.</p>
+
+        <p class="formats">VST3 &nbsp;·&nbsp; Audio Unit</p>
+      </div>
+
+      <div class="pond" aria-hidden="true">
+        <img class="ripple" src="assets/img/ripple-1.png" alt="">
+        <img class="plant p-coral"   src="assets/img/coral-1.png" alt="">
+        <img class="plant p-grass"   src="assets/img/seagrass-1.png" alt="">
+        <img class="plant p-anemone" src="assets/img/anemone-1.png" alt="">
+        <img class="fish f-koi"   src="assets/img/fish-normal-koi-1.png" alt="">
+        <img class="fish f-betta" src="assets/img/fish-pad-betta-1.png" alt="">
+        <img class="fish f-tile"  src="assets/img/fish-striped-tilefish-1.png" alt="">
+        <img class="fish f-tetra" src="assets/img/fish-normal-neontetra-1.png" alt="">
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= how ================= -->
+  <div class="wrap">
+    <section class="band" id="how">
+      <div class="band-head">
+        <p class="eyebrow">How it works</p>
+        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-how-narrow.svg"><img src="assets/type/h2-how-wide.svg" alt="Three gestures, and it is running."></picture></h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <h3>Load a fish</h3>
+          <p>
+            Drag any audio file onto one of the seven slots in the tray — or
+            point Shizen at a folder and let it fill all seven at random.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Drop it in the pond</h3>
+          <p>
+            Lift the fish into the water and it comes alive: it swims, and it
+            starts triggering its sample without being asked.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Set a key</h3>
+          <p>
+            Choose a root and a scale. Every note every fish picks lands
+            inside it, within an octave either side of the sample's own pitch.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= fish types ================= -->
+  <div class="wrap">
+    <section class="band">
+      <div class="band-head">
+        <p class="eyebrow">Five kinds of fish</p>
+        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-types-narrow.svg"><img src="assets/type/h2-types-wide.svg" alt="Each one plays differently."></picture></h2>
+      </div>
+
+      <div class="types">
+        <div class="type">
+          <span class="art"><img src="assets/img/fish-normal-koi-1.png" alt="Normal fish" loading="lazy" decoding="sync"></span>
+          <h3>Normal</h3>
+          <p>One sample, struck at intervals. The plain voice everything else is a variation on.</p>
+        </div>
+        <div class="type">
+          <span class="art"><img src="assets/img/fish-pad-betta-1.png" alt="Sustain fish" loading="lazy" decoding="sync"></span>
+          <h3>Sustain</h3>
+          <p>Loops its sample seamlessly and holds, sustaining underneath the rest.</p>
+        </div>
+        <div class="type">
+          <span class="art"><img src="assets/img/fish-striped-tilefish-1.png" alt="Multi fish" loading="lazy" decoding="sync"></span>
+          <h3>Multi</h3>
+          <p>Holds a small palette of samples and chooses between them each time it fires.</p>
+        </div>
+        <div class="type">
+          <span class="art"><img src="assets/img/fish-bass-purple-1.png" alt="Bass fish" loading="lazy" decoding="sync"></span>
+          <h3>Bass</h3>
+          <p>One note at a time, locked to the root — each new note cutting the last, the way a bass line moves.</p>
+        </div>
+        <div class="type">
+          <span class="art"><img src="assets/img/fish-chord-rainbow-1.png" alt="Chord fish" loading="lazy" decoding="sync"></span>
+          <h3>Chord</h3>
+          <p>Plays its sample as a chord. Spread the notes and the chord becomes an arpeggio.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= habitats ================= -->
+  <div class="wrap">
+    <section class="band" id="sound">
+      <div class="band-head">
+        <p class="eyebrow">Effects</p>
+        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-effects-narrow.svg"><img src="assets/type/h2-effects-wide.svg" alt="Color your pond"></picture></h2>
+        <p>
+          Drag and drop coral, and hear the fish adapt to the new habitat.
+        </p>
+      </div>
+
+      <div class="corals">
+          <figure>
+            <span class="art"><img src="assets/img/coral-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Reverb</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/elkhorn-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Delay</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/seagrass-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Phaser</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/brain-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Flanger</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/anemone-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Distortion</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/bubble-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Freq Shift</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/pink-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Chorus</figcaption>
+          </figure>
+          <figure>
+            <span class="art"><img src="assets/img/tube-1.png" alt="" loading="lazy" decoding="sync"></span>
+            <figcaption>Filter</figcaption>
+          </figure>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= modes ================= -->
+  <div class="wrap">
+    <section class="band" id="modes">
+      <div class="band-head">
+        <p class="eyebrow">Shizen / Nagare</p>
+        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-modes-narrow.svg"><img src="assets/type/h2-modes-wide.svg" alt="Two modes."></picture></h2>
+      </div>
+
+      <div class="modes">
+        <div class="mode">
+          <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-shizen-narrow.svg"><img src="assets/type/mode-shizen-wide.svg" alt="Shizen"></picture></h3>
+          <p class="mode-sub">let the pond speak</p>
+          <!-- TODO: the Shizen recording. A <video> beats a GIF here - far
+               smaller, and it can loop muted inline:
+               <video class="mode-media" src="assets/video/shizen.mp4"
+                      autoplay loop muted playsinline></video>
+               The box below is sized to the plugin window (1100x800). -->
+          <div class="mode-media is-empty"><span class="small">Shizen in motion</span></div>
+        </div>
+        <div class="mode">
+          <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-nagare-narrow.svg"><img src="assets/type/mode-nagare-wide.svg" alt="Nagare"></picture></h3>
+          <p class="mode-sub">stir the waters</p>
+          <!-- TODO: the Nagare recording - see the note opposite. -->
+          <div class="mode-media is-empty"><span class="small">Nagare in motion</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= demo ================= -->
+  <div class="wrap">
+    <section class="band">
+      <div class="band-head">
+        <p class="eyebrow">In motion</p>
+        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-demo-narrow.svg"><img src="assets/type/h2-demo-wide.svg" alt="Watch it run."></picture></h2>
+      </div>
+      <!-- TODO: drop the walkthrough video in here. For YouTube:
+           <iframe src="https://www.youtube-nocookie.com/embed/VIDEO-ID"
+                   title="Shizen walkthrough" allowfullscreen loading="lazy"></iframe> -->
+      <div class="demo-frame">
+        <p class="small" style="margin:0">
+          Demo video goes here — see <code>site/README.md</code>.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= buy ================= -->
+  <div class="wrap">
+    <section class="band" id="buy">
+      <div class="buy-card">
+        <p class="eyebrow" style="margin-bottom:4px">Shizen</p>
+        <p class="price">$49.99</p>
+        <p class="muted small" style="margin:0 auto 4px">One-time purchase, free updates</p>
+
+        <ul>
+          <li>VST3 on macOS and Windows, Audio Unit on macOS</li>
+          <li>macOS and Windows, 64-bit</li>
+          <li>9 factory presets to start from</li>
+          <li>A factory one-shot library included</li>
+          <li>Use it in commercial releases, royalty-free</li>
+        </ul>
+
+        <a class="btn btn-buy lemonsqueezy-button"
+           href="https://jayubeats.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0">
+          Buy Shizen — $49.99
+        </a>
+
+        <p class="small muted" style="margin:20px auto 0">
+          Secure checkout by Lemon Squeezy. VAT and sales tax handled at checkout.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= specs + faq ================= -->
+  <div class="wrap">
+    <section class="band" id="specs">
+      <div class="cols">
+        <div>
+          <p class="eyebrow">Requirements</p>
+          <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-specs-narrow.svg"><img src="assets/type/h2-specs-wide.svg" alt="What you need"></picture></h2>
+          <dl class="spec-list">
+            <dt>macOS</dt>
+            <dd>Intel or Apple Silicon. macOS 10.13 High Sierra or later on Intel, macOS 11 Big Sur or later on Apple Silicon. Signed and notarised by Apple — it installs without a Gatekeeper warning.</dd>
+            <dt>Windows</dt>
+            <dd>Windows 10 or later, 64-bit. The installer is code-signed, and
+                Windows may still show a SmartScreen prompt the first few times
+                it is run &mdash; choose <em>More info</em>, then <em>Run anyway</em>.
+                That notice fades as more people install it.</dd>
+            <dt>Formats</dt>
+            <dd>VST3 on both platforms, and Audio Unit on macOS.</dd>
+            <dt>Hosts</dt>
+            <dd>Any VST3 or AU host — FL Studio, Ableton Live, Logic Pro, Bitwig, Reaper, Studio One.</dd>
+            <dt>Samples</dt>
+            <dd>WAV, AIFF, FLAC and Ogg on both platforms; macOS also reads MP3, M4A and CAF. Your own files, or the included library.</dd>
+          </dl>
+        </div>
+
+        <div>
+          <p class="eyebrow">Updates</p>
+          <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-updates-narrow.svg"><img src="assets/type/h2-updates-wide.svg" alt="What has changed"></picture></h2>
+
+          <ol class="changelog">
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.198.8</span><span class="cl-date">7 Sep 2026</span></span>
+              <span class="cl-what">A sample that will not load now says why - a file the plugin is not permitted to read reads differently from one in an unsupported format.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.198.6</span><span class="cl-date">7 Sep 2026</span></span>
+              <span class="cl-what">A Shortcuts panel in Global settings. Every gesture in the pond is Shift + click, and now it says so.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.198.3</span><span class="cl-date">7 Sep 2026</span></span>
+              <span class="cl-what">Universal on macOS - native on both Apple Silicon and Intel, and visible to hosts running under Rosetta.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.198.0</span><span class="cl-date">6 Sep 2026</span></span>
+              <span class="cl-what">A 75% window option, for screens the full size will not fit.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.197.0</span><span class="cl-date">5 Sep 2026</span></span>
+              <span class="cl-what">Signed and notarised under the Jayu Beats identity. Hosts may need one plugin rescan to pick it up.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.196.0</span><span class="cl-date">5 Sep 2026</span></span>
+              <span class="cl-what">Empty palette slots draw a fish and say what to do with it, and a sample dragged over a slot grows it rather than boxing it.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.195.0</span><span class="cl-date">5 Sep 2026</span></span>
+              <span class="cl-what">A new factory one-shot library, and nine factory presets that all load what they promise.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.194.10</span><span class="cl-date">4 Sep 2026</span></span>
+              <span class="cl-what">Fixed a crash: a reversed note could keep reading a sample buffer after it had been freed. Deleting the plugin mid-load could do the same.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.191.0</span><span class="cl-date">3 Sep 2026</span></span>
+              <span class="cl-what">A Mute beside the master Volume.</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="wrap">
+  <footer class="site-foot">
+    <span>© <span id="year">2026</span> Jayu Beats</span>
+    <span>
+      <a href="mailto:prodjayu@gmail.com">Support</a> ·
+      <a href="#buy">Buy</a>
+    </span>
+  </footer>
+</div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+<!-- Lemon Squeezy overlay checkout. Any link carrying .lemonsqueezy-button
+     and ?embed=1 opens in a modal rather than navigating away. -->
+<script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+
+</body>
+</html>
