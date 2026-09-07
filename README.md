@@ -25,14 +25,21 @@ Everything below is marked `TODO` in `index.html`. Search for it.
 3. ~~**Support email**~~ Done - `prodjayu@gmail.com` in the footer.
 4. **Demo video.** Replace the dashed `.demo-frame` placeholder with the
    iframe commented directly above it.
-5. **The two mode recordings.** Each `.mode-media.is-empty` box in the Two
+5. **The five demo tracks.** The "Hear the pond" section expects
+   `assets/audio/demo-1.mp3` through `demo-5.mp3`. Until they exist the
+   players render but will not play. Every one carries `preload="none"` on
+   purpose - five audio files fetched before anyone presses anything would
+   dwarf the rest of the page, which is under a megabyte in total. The track
+   names and one-line notes are in `index.html`; change them to match
+   whatever you actually record.
+6. **The two mode recordings.** Each `.mode-media.is-empty` box in the Two
    modes section is a slot; the markup to drop in is commented above it.
    Prefer a muted, looping, inline `<video>` over a GIF - an equivalent MP4
    is roughly a tenth the size, and a GIF of a whole plugin window runs to
    tens of megabytes. Drop the `is-empty` class when you do. The boxes are
    sized `11 / 8` for the plugin window; change `aspect-ratio` on
    `.mode-media` if you record the pond alone.
-6. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
+7. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
    what a pasted link renders as in Discord, X or iMessage. Composed from the
    site's own artwork and the omake wordmark outlines, so it needs no font and
    stays licence-clean.
@@ -57,7 +64,7 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    amount that differs per file, so the arithmetic cannot tell you.
    `og:image` and `og:url` are absolute and name the live host - update both
    when a real domain is pointed at the page.
-7. **A real screenshot.** The hero currently composes the plugin's own
+8. **A real screenshot.** The hero currently composes the plugin's own
    sprites into a pond, which looks right but is not the product. One honest
    screenshot of the actual window will sell it better than the composition.
 

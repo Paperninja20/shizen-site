@@ -285,6 +285,23 @@ section { position: relative; z-index: 2; }
 }
 .step p { font-size: 0.97em; }
 
+/* --- the demos ---------------------------------------------------------- */
+.tracks { list-style: none; margin: 0; padding: 0; max-width: 620px; }
+.track {
+  padding: 14px 0;
+  border-top: 1px solid rgba(217,198,163,0.7);
+}
+.track:first-child { border-top: 0; padding-top: 0; }
+.track-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 7px; }
+.track-name { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); }
+.track-note {
+  font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-soft); opacity: 0.8;
+}
+/* The native control: styling it beyond width is a losing fight across
+   browsers, and it already reads as "press this to hear it". */
+.track audio { width: 100%; height: 36px; display: block; }
+
 /* --- fish types --------------------------------------------------------- */
 .types { display: grid; gap: clamp(20px, 3vw, 30px); grid-template-columns: repeat(2, 1fr); }
 @media (min-width: 620px) { .types { grid-template-columns: repeat(3, 1fr); } }
@@ -470,6 +487,7 @@ section { position: relative; z-index: 2; }
   <header class="site-head">
     <a class="wordmark" href="#top"><picture><source media="(max-width: 700px)" srcset="assets/type/wordmark-narrow.svg"><img src="assets/type/wordmark-wide.svg" alt="Shizen"></picture> <small>Jayu Beats</small></a>
     <nav class="site-nav">
+      <a href="#hear" class="hide-sm">Hear it</a>
       <a href="#how" class="hide-sm">How it works</a>
       <a href="#sound" class="hide-sm">Sound</a>
       <a href="#specs" class="hide-sm">Requirements</a>
@@ -502,7 +520,7 @@ section { position: relative; z-index: 2; }
              href="https://jayubeats.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0">
             Buy Shizen — $49.99
           </a>
-          <a class="btn btn-ghost" href="#sound">Hear it first</a>
+          <a class="btn btn-ghost" href="#hear">Hear it first</a>
         </div>
         <p class="price-note">One-time purchase. Free updates. No subscription.</p>
 
@@ -522,6 +540,66 @@ section { position: relative; z-index: 2; }
     </section>
   </div>
 
+  <!-- ================= hear ================= -->
+  <div class="wrap">
+    <section class="band" id="hear">
+      <div class="band-head">
+        <p class="eyebrow">Listen</p>
+        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-hear-narrow.svg"><img src="assets/type/h2-hear-wide.svg" alt="Hear the pond"></picture></h2>
+        <p>
+          Five ponds, left to run. Nothing here is arranged &mdash; each one is
+          a scene playing itself.
+        </p>
+      </div>
+
+      <!-- preload="none" on every player: five audio files would otherwise be
+           fetched before anyone pressed anything, on a page whose whole
+           payload is under a megabyte. -->
+      <ol class="tracks">
+          <li class="track">
+            <div class="track-head">
+              <span class="track-name">Shimmering Beauty</span>
+              <span class="track-note">pads and long tails</span>
+            </div>
+            <!-- TODO: drop demo-1.mp3 into assets/audio/ -->
+            <audio controls preload="none" src="assets/audio/demo-1.mp3"></audio>
+          </li>
+          <li class="track">
+            <div class="track-head">
+              <span class="track-name">Foley Maker</span>
+              <span class="track-note">found sound, reversed</span>
+            </div>
+            <!-- TODO: drop demo-2.mp3 into assets/audio/ -->
+            <audio controls preload="none" src="assets/audio/demo-2.mp3"></audio>
+          </li>
+          <li class="track">
+            <div class="track-head">
+              <span class="track-name">Curiosity</span>
+              <span class="track-note">sparse and clustered</span>
+            </div>
+            <!-- TODO: drop demo-3.mp3 into assets/audio/ -->
+            <audio controls preload="none" src="assets/audio/demo-3.mp3"></audio>
+          </li>
+          <li class="track">
+            <div class="track-head">
+              <span class="track-name">Seafloor</span>
+              <span class="track-note">low and slow</span>
+            </div>
+            <!-- TODO: drop demo-4.mp3 into assets/audio/ -->
+            <audio controls preload="none" src="assets/audio/demo-4.mp3"></audio>
+          </li>
+          <li class="track">
+            <div class="track-head">
+              <span class="track-name">Minimal Botanic</span>
+              <span class="track-note">short, dry, close</span>
+            </div>
+            <!-- TODO: drop demo-5.mp3 into assets/audio/ -->
+            <audio controls preload="none" src="assets/audio/demo-5.mp3"></audio>
+          </li>
+      </ol>
+    </section>
+  </div>
+
   <!-- ================= how ================= -->
   <div class="wrap">
     <section class="band" id="how">
@@ -532,25 +610,16 @@ section { position: relative; z-index: 2; }
 
       <div class="steps">
         <div class="step">
-          <h3>Load a fish</h3>
-          <p>
-            Drag any audio file onto one of the seven slots in the tray — or
-            point Shizen at a folder and let it fill all seven at random.
-          </p>
+          <h3>Select your sounds</h3>
+          <p>Load fish with an audio sample or one shot.</p>
         </div>
         <div class="step">
-          <h3>Drop it in the pond</h3>
-          <p>
-            Lift the fish into the water and it comes alive: it swims, and it
-            starts triggering its sample without being asked.
-          </p>
+          <h3>Fill the pond</h3>
+          <p>Drag fish from the palette into the pond.</p>
         </div>
         <div class="step">
-          <h3>Set a key</h3>
-          <p>
-            Choose a root and a scale. Every note every fish picks lands
-            inside it, within an octave either side of the sample's own pitch.
-          </p>
+          <h3>The pond speaks</h3>
+          <p>Adjust the settings of the fish to your liking, and let the beauty of randomness do the rest.</p>
         </div>
       </div>
     </section>
