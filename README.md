@@ -44,7 +44,7 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    python3 site/tools/check-og-card.py   # prove the margin still holds
    ```
 
-   **The filename is versioned (`og-card-v2.png`) on purpose.** Discord, X and
+   **The filename is versioned (`og-card-v3.png`) on purpose.** Discord, X and
    iMessage cache the card on their own proxies keyed by that URL, for days -
    replacing the bytes at a fixed name leaves everyone looking at the old
    picture with no way to tell it is stale. When the artwork changes, bump the
