@@ -32,10 +32,25 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    tens of megabytes. Drop the `is-empty` class when you do. The boxes are
    sized `11 / 8` for the plugin window; change `aspect-ratio` on
    `.mode-media` if you record the pond alone.
-6. **Open Graph image.** `assets/img/og-card.png`, 1200×630, is what appears
-   when the link is pasted into Discord, X or iMessage. Not yet made. Also
-   set `og:image` to an absolute URL once the domain exists — relative URLs
-   do not resolve in most link unfurlers.
+6. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
+   what a pasted link renders as in Discord, X or iMessage. Composed from the
+   site's own artwork and the omake wordmark outlines, so it needs no font and
+   stays licence-clean.
+
+   To change it: edit `tools/og-card.html`, then
+
+   ```sh
+   site/tools/make-og-card.sh        # render + quantise + install
+   python3 site/tools/check-og-card.py   # prove the margin still holds
+   ```
+
+   The checker enforces a 15px border with no art in it, and that nothing is
+   cropped. It measures rather than trusts the CSS: the card is rendered twice,
+   once with `img.art` hidden, and the difference IS the art wherever it
+   actually landed - a sprite's visible ink is smaller than its box by an
+   amount that differs per file, so the arithmetic cannot tell you.
+   `og:image` and `og:url` are absolute and name the live host - update both
+   when a real domain is pointed at the page.
 7. **A real screenshot.** The hero currently composes the plugin's own
    sprites into a pond, which looks right but is not the product. One honest
    screenshot of the actual window will sell it better than the composition.
