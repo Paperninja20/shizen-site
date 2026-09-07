@@ -132,19 +132,36 @@ the rest of the page staying omake.
 
 ## Deploying
 
-Any static host will take this folder as-is.
+**Live at https://paperninja20.github.io/shizen-site/**
 
-- **Cloudflare Pages** — connect the repo, set the build output directory to
-  `site`, leave the build command empty.
-- **Netlify** — same, publish directory `site`.
-- **GitHub Pages** — needs the folder at the repo root or in `docs/`, so
-  point an action at `site` rather than moving it.
-
-Local preview:
+To publish a change:
 
 ```sh
-cd site && python3 -m http.server 8000    # then open http://localhost:8000
+site/tools/publish.sh "what changed"
 ```
+
+That mirrors `site/` into the public `Paperninja20/shizen-site` repo, which
+GitHub Pages serves. It rsyncs with `--delete`, so a file removed here is
+removed from the live page too.
+
+### Why a second repo
+
+The plugin repo is PRIVATE, and GitHub Pages will not serve a private repo on
+a free plan. The two alternatives were making the plugin source public to
+obtain a landing page - a bad trade for something being sold - or paying for
+a plan to host one static page. So only `site/` is mirrored, and the source
+stays private.
+
+`site/tools` is deliberately NOT mirrored. `make-type.py` reads the licensed
+omake font out of the plugin tree, and that licence forbids redistributing
+the font data; publishing a script that points straight at it invites exactly
+that. Regenerate type in this repo, then publish.
+
+### A real domain
+
+When one is pointed at the page, update **`og:url`** and **`og:image`** in
+`index.html` - both are absolute, because link unfurlers do not resolve a
+relative URL, and both currently name the github.io host.
 
 ## Page weight
 
