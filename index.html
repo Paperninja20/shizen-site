@@ -383,11 +383,20 @@ section { position: relative; z-index: 2; }
   color: var(--ink-soft);
 }
 /* --- two modes ---------------------------------------------------------- */
+/* STACKED, not side by side.
+   
+   Two columns inside a 1120px page can never give a demo more than about
+   470px, and at that size the pond is a thumbnail - which is the opposite of
+   what these are for. One per row lets each run at 900px, roughly double,
+   and 900 is deliberately under the clips' own 960 so nothing is upscaled.
+   
+   The side-by-side comparison is worth less than being able to see the
+   thing: the two are still adjacent, just one above the other. */
 .modes {
-  display: grid; gap: clamp(26px, 4vw, 58px);
-  grid-template-columns: 1fr; max-width: 880px;
+  display: grid; gap: clamp(34px, 5vw, 64px);
+  grid-template-columns: 1fr;
 }
-@media (min-width: 720px) { .modes { grid-template-columns: 1fr 1fr; } }
+.mode { max-width: 900px; }
 .mode h3 { margin: 0 0 0.15em; }
 .mode h3 img { display: block; max-width: 100%; height: auto; }
 .mode-sub { font-size: 1em; color: var(--ink-soft); margin: 0 0 18px; }
@@ -407,13 +416,11 @@ section { position: relative; z-index: 2; }
 .mode-media {
   display: block;
   width: 100%;
-  /* The two clips are 640x360 and 640x364 - cropped separately, so their
-     aspects differ by 1.1%. One shared 16/9 box with object-fit: cover takes
-     that one percent off the taller one, which nothing can see; `contain`
-     would show it as thin bars on one card and not the other, which
-     something can. */
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  /* Both clips are exactly 960x696, so the ratio is exact and nothing is
+     cropped or letterboxed. (The cropped pair that briefly replaced these
+     differed from each other by 1.1% and needed object-fit: cover to hide
+     it - not the case here.) */
+  aspect-ratio: 960 / 696;
   pointer-events: none;
   border-radius: 4px;
   background: var(--paper-scene);
