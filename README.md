@@ -32,13 +32,24 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    dwarf the rest of the page, which is under a megabyte in total. The track
    names and one-line notes are in `index.html`; change them to match
    whatever you actually record.
-6. **The two mode recordings.** Each `.mode-media.is-empty` box in the Two
-   modes section is a slot; the markup to drop in is commented above it.
-   Prefer a muted, looping, inline `<video>` over a GIF - an equivalent MP4
-   is roughly a tenth the size, and a GIF of a whole plugin window runs to
-   tens of megabytes. Drop the `is-empty` class when you do. The boxes are
-   sized `11 / 8` for the plugin window; change `aspect-ratio` on
-   `.mode-media` if you record the pond alone.
+6. ~~**The two mode recordings.**~~ Done - `assets/video/shizen-mode.mp4`
+   and `nagare-mode.mp4`, 960x696, with a still from each as the poster so
+   the cards are not black rectangles before play.
+
+   Both carry `preload="none"`: 18MB of video fetched before anyone pressed
+   play would be eighteen times the rest of the page.
+
+   To replace one: the sources were 2198x1598 H.264 `.mov` screen captures,
+   converted with the macOS built-in (no ffmpeg needed) -
+
+   ```sh
+   avconvert --source IN.mov --output out.mp4 --preset Preset960x540 --replace
+   qlmanage -t -s 960 -o /tmp OUT.mp4     # a still, for the poster
+   ```
+
+   `Preset960x540` fits WITHIN that box preserving aspect, so a 1.375 source
+   lands at 960x696. `.mode-media` has `aspect-ratio: 960 / 696` to match
+   exactly - no letterbox, no crop. Change both together.
 7. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
    what a pasted link renders as in Discord, X or iMessage. Composed from the
    site's own artwork and the omake wordmark outlines, so it needs no font and

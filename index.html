@@ -392,12 +392,16 @@ section { position: relative; z-index: 2; }
 .mode h3 img { display: block; max-width: 100%; height: auto; }
 .mode-sub { font-size: 1em; color: var(--ink-soft); margin: 0 0 18px; }
 
-/* Sized to the plugin window, 1100x800, since a recording of a mode is most
-   likely the whole thing. Change the ratio here if it is the pond alone. */
+/* The recordings are 960x696 - a capture of the 1100x800 window, trimmed.
+   Matching that exactly means no letterboxing and no crop.
+   
+   preload="none" on both: 18MB of video fetched before anyone pressed play
+   would be eighteen times the rest of the page. The poster is a still from
+   each clip, so the card is not a black rectangle until it is played. */
 .mode-media {
   display: block;
   width: 100%;
-  aspect-ratio: 11 / 8;
+  aspect-ratio: 960 / 696;
   border-radius: 4px;
   background: var(--paper-scene);
   object-fit: cover;
@@ -723,18 +727,16 @@ section { position: relative; z-index: 2; }
         <div class="mode">
           <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-shizen-narrow.svg"><img src="assets/type/mode-shizen-wide.svg" alt="Shizen"></picture></h3>
           <p class="mode-sub">let the pond speak</p>
-          <!-- TODO: the Shizen recording. A <video> beats a GIF here - far
-               smaller, and it can loop muted inline:
-               <video class="mode-media" src="assets/video/shizen.mp4"
-                      autoplay loop muted playsinline></video>
-               The box below is sized to the plugin window (1100x800). -->
-          <div class="mode-media is-empty"><span class="small">Shizen in motion</span></div>
+          <video class="mode-media" playsinline controls preload="none"
+                 poster="assets/video/shizen-mode-poster.png"
+                 src="assets/video/shizen-mode.mp4"></video>
         </div>
         <div class="mode">
           <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-nagare-narrow.svg"><img src="assets/type/mode-nagare-wide.svg" alt="Nagare"></picture></h3>
           <p class="mode-sub">stir the waters</p>
-          <!-- TODO: the Nagare recording - see the note opposite. -->
-          <div class="mode-media is-empty"><span class="small">Nagare in motion</span></div>
+          <video class="mode-media" playsinline controls preload="none"
+                 poster="assets/video/nagare-mode-poster.png"
+                 src="assets/video/nagare-mode.mp4"></video>
         </div>
       </div>
     </section>
