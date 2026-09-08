@@ -39,17 +39,23 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    Both carry `preload="none"`: 18MB of video fetched before anyone pressed
    play would be eighteen times the rest of the page.
 
-   To replace one: the sources were 2198x1598 H.264 `.mov` screen captures,
-   converted with the macOS built-in (no ffmpeg needed) -
+   To replace one: the sources are H.264 `.mov` screen captures, converted
+   with the macOS built-in (no ffmpeg needed) -
 
    ```sh
-   avconvert --source IN.mov --output out.mp4 --preset Preset960x540 --replace
-   qlmanage -t -s 960 -o /tmp OUT.mp4     # a still, for the poster
+   avconvert --source IN.mov --output out.mp4 --preset Preset640x480 --replace
+   qlmanage -t -s 960 -o /tmp out.mp4     # a still, for the poster
    ```
 
-   `Preset960x540` fits WITHIN that box preserving aspect, so a 1.375 source
-   lands at 960x696. `.mode-media` has `aspect-ratio: 960 / 696` to match
-   exactly - no letterbox, no crop. Change both together.
+   The presets fit WITHIN their box preserving aspect, so a near-16:9 source
+   lands at 640x360-ish. `Preset960x540` was tried and is twice the size for
+   a difference nothing can see on a card that renders 440px wide.
+
+   `.mode-media` is `aspect-ratio: 16 / 9` with `object-fit: cover`, NOT an
+   exact per-clip ratio: the two clips were cropped separately and differ by
+   1.1% (640x360 against 640x364). `cover` takes that one percent off the
+   taller one invisibly; `contain` would show it as thin bars on one card and
+   not the other.
 7. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
    what a pasted link renders as in Discord, X or iMessage. Composed from the
    site's own artwork and the omake wordmark outlines, so it needs no font and

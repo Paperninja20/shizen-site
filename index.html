@@ -407,7 +407,13 @@ section { position: relative; z-index: 2; }
 .mode-media {
   display: block;
   width: 100%;
-  aspect-ratio: 640 / 464;
+  /* The two clips are 640x360 and 640x364 - cropped separately, so their
+     aspects differ by 1.1%. One shared 16/9 box with object-fit: cover takes
+     that one percent off the taller one, which nothing can see; `contain`
+     would show it as thin bars on one card and not the other, which
+     something can. */
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   pointer-events: none;
   border-radius: 4px;
   background: var(--paper-scene);
