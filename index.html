@@ -395,13 +395,20 @@ section { position: relative; z-index: 2; }
 /* The recordings are 960x696 - a capture of the 1100x800 window, trimmed.
    Matching that exactly means no letterboxing and no crop.
    
-   preload="none" on both: 18MB of video fetched before anyone pressed play
-   would be eighteen times the rest of the page. The poster is a still from
-   each clip, so the card is not a black rectangle until it is played. */
+   They play themselves, loop, and have no controls - the pond does not need
+   a scrub bar to make its point. pointer-events: none so there is nothing to
+   click at all.
+
+   preload="none" and started by an IntersectionObserver rather than the
+   autoplay attribute: autoplay fetches on load, and 9.5MB arriving before
+   anyone has scrolled near it would be ten times the rest of the page.
+   Nobody who never reaches this section pays for it. The poster covers the
+   gap between arriving and the first frame decoding. */
 .mode-media {
   display: block;
   width: 100%;
-  aspect-ratio: 960 / 696;
+  aspect-ratio: 640 / 464;
+  pointer-events: none;
   border-radius: 4px;
   background: var(--paper-scene);
   object-fit: cover;
@@ -727,14 +734,16 @@ section { position: relative; z-index: 2; }
         <div class="mode">
           <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-shizen-narrow.svg"><img src="assets/type/mode-shizen-wide.svg" alt="Shizen"></picture></h3>
           <p class="mode-sub">let the pond speak</p>
-          <video class="mode-media" playsinline controls preload="none"
+          <video class="mode-media" playsinline muted loop
+                 preload="none" disablepictureinpicture
                  poster="assets/video/shizen-mode-poster.png"
                  src="assets/video/shizen-mode.mp4"></video>
         </div>
         <div class="mode">
           <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-nagare-narrow.svg"><img src="assets/type/mode-nagare-wide.svg" alt="Nagare"></picture></h3>
           <p class="mode-sub">stir the waters</p>
-          <video class="mode-media" playsinline controls preload="none"
+          <video class="mode-media" playsinline muted loop
+                 preload="none" disablepictureinpicture
                  poster="assets/video/nagare-mode-poster.png"
                  src="assets/video/nagare-mode.mp4"></video>
         </div>
@@ -878,5 +887,32 @@ section { position: relative; z-index: 2; }
      and ?embed=1 opens in a modal rather than navigating away. -->
 <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
 
+<script>
+  // The mode demos behave like GIFs: no controls, looping, and started only
+  // when they are actually on screen. preload="none" means nothing is
+  // fetched until play() is called, so scrolling past is free.
+  //
+  // Paused on the way out as well - two clips decoding forever in a
+  // background tab is work nobody asked for.
+  (function modeDemos() {
+    var vids = [].slice.call(document.querySelectorAll('video.mode-media'));
+    if (! vids.length) return;
+
+    if (! ('IntersectionObserver' in window)) {
+      vids.forEach(function (v) { v.play().catch(function () {}); });
+      return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var v = e.target;
+        if (e.isIntersecting) v.play().catch(function () {});
+        else v.pause();
+      });
+    }, { threshold: 0.25 });
+
+    vids.forEach(function (v) { io.observe(v); });
+  })();
+</script>
 </body>
 </html>
