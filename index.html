@@ -548,7 +548,7 @@ section { position: relative; z-index: 2; }
         </div>
         <p class="price-note">One-time purchase. Free updates. No subscription.</p>
 
-        <p class="formats">VST3 &nbsp;·&nbsp; Audio Unit</p>
+        <p class="formats">VST3 &nbsp;·&nbsp; Audio Unit &nbsp;·&nbsp; Standalone</p>
       </div>
 
       <div class="pond" aria-hidden="true">
@@ -791,7 +791,7 @@ section { position: relative; z-index: 2; }
         <p class="muted small" style="margin:0 auto 4px">One-time purchase, free updates</p>
 
         <ul>
-          <li>VST3 on macOS and Windows, Audio Unit on macOS</li>
+          <li>VST3 on macOS and Windows, Audio Unit on macOS, and a standalone app on both</li>
           <li>macOS and Windows, 64-bit</li>
           <li>9 factory presets to start from</li>
           <li>A factory one-shot library included</li>
@@ -821,16 +821,11 @@ section { position: relative; z-index: 2; }
             <dt>macOS</dt>
             <dd>Intel or Apple Silicon. macOS 10.13 High Sierra or later on Intel, macOS 11 Big Sur or later on Apple Silicon. Signed and notarised by Apple — it installs without a Gatekeeper warning.</dd>
             <dt>Windows</dt>
-            <dd>Windows 10 or later, 64-bit. The installer is code-signed, and
-                Windows may still show a SmartScreen prompt the first few times
-                it is run &mdash; choose <em>More info</em>, then <em>Run anyway</em>.
-                That notice fades as more people install it.</dd>
+            <dd>Windows 10 or later, 64-bit. The installer is code-signed.</dd>
             <dt>Formats</dt>
-            <dd>VST3 on both platforms, and Audio Unit on macOS.</dd>
+            <dd>VST3 on both platforms, Audio Unit on macOS, and a standalone app on both. The installer lets you choose which to install.</dd>
             <dt>Hosts</dt>
-            <dd>Any VST3 or AU host — FL Studio, Ableton Live, Logic Pro, Bitwig, Reaper, Studio One.</dd>
-            <dt>Samples</dt>
-            <dd>WAV, AIFF, FLAC and Ogg on both platforms; macOS also reads MP3, M4A and CAF. Your own files, or the included library.</dd>
+            <dd>Any VST3 or AU host — FL Studio, Ableton Live, Logic Pro, Bitwig, Reaper, Studio One. Or no host at all: the standalone runs on its own.</dd>
           </dl>
         </div>
 
@@ -839,6 +834,34 @@ section { position: relative; z-index: 2; }
           <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-updates-narrow.svg"><img src="assets/type/h2-updates-wide.svg" alt="What has changed"></picture></h2>
 
           <ol class="changelog">
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.200.5</span><span class="cl-date">8 Sep 2026</span></span>
+              <span class="cl-what">A fish out in the pond keeps its name readable in the palette. The stand-in dims the fish, not the label under it.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.200.4</span><span class="cl-date">8 Sep 2026</span></span>
+              <span class="cl-what">A saved capture opens straight in Finder with the file already selected, so it can go into a track on the next click. Shortcuts opens from a ? beside its heading.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.200.3</span><span class="cl-date">8 Sep 2026</span></span>
+              <span class="cl-what">On Random timing the division reads Minimum, because a note waits for the next line rather than falling on every one. Feel belongs to Tempo-Sync, and clears when a fish is switched to Random.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.200.1</span><span class="cl-date">8 Sep 2026</span></span>
+              <span class="cl-what">The standalone app has a face: a koi on washi paper, drawn from the pond's own artwork.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.200.0</span><span class="cl-date">8 Sep 2026</span></span>
+              <span class="cl-what">Shizen now installs as a standalone app as well as a plugin, so a pond can run without opening a DAW. The installer asks which formats you want.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.199.0</span><span class="cl-date">7 Sep 2026</span></span>
+              <span class="cl-what">Capture. The pond is always recording the last two minutes, so the take you were not recording is still there - keep the last 30 seconds, minute, or two.</span>
+            </li>
+            <li>
+              <span class="cl-head"><span class="cl-ver">2.198.9</span><span class="cl-date">7 Sep 2026</span></span>
+              <span class="cl-what">Randomize works on every preset again, not only the four whose sample folder happened to exist. A fish's Level now fades it in the pond alone, leaving the palette legible.</span>
+            </li>
             <li>
               <span class="cl-head"><span class="cl-ver">2.198.8</span><span class="cl-date">7 Sep 2026</span></span>
               <span class="cl-what">A sample that will not load now says why - a file the plugin is not permitted to read reads differently from one in an unsupported format.</span>

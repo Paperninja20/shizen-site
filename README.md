@@ -245,15 +245,39 @@ x86_64  VST3  SUCCESS      arm64  VST3  SUCCESS
 x86_64  AU    SUCCESS      arm64  AU    SUCCESS
 ```
 
-### Nothing ships a standalone
+### The standalone ships, and the installer asks
 
-`release-macos.sh` builds and packages `Nagare_VST3` and `Nagare_AU` only, and
-the Windows workflow builds `Nagare_VST3` alone. The standalone target exists
-in the build tree but reaches no installer, so the page does not claim one.
+As of v2.200.0 all three formats are built, signed and packaged. The page may
+say so.
 
-If it should ship, that is a change to the release script (build the target,
-`ditto` it to `/Applications`, sign it like the others) and to the Inno
-Setup script on Windows — not a change to this page.
+The macOS installer is no longer one component: `release-macos.sh` runs
+`pkgbuild` four times — VST3, AU, standalone, and the factory one-shots — and
+`productbuild --distribution` assembles them behind a choice pane
+(`customize="always"`, so it opens on that page rather than hiding it behind a
+Customise button). The one-shots are `start_enabled="false"`: shown, ticked,
+and not un-tickable, because every format reads them and the plugin opens to
+an empty pond without them.
+
+Windows mirrors this with an Inno `[Types]`/`[Components]` pair. There is no
+AU there, so the choice is VST3 and standalone; the one-shots carry no
+`Components:` parameter, which is how Inno spells "always installed".
+
+Two things that are easy to get wrong here, both found by measurement rather
+than reading:
+
+- `pkgutil --payload-files` takes a *component* package. Against a
+  distribution it returns nothing and does not fail, which silently turned the
+  AppleDouble and one-shot-count checks into no-ops. The checks now
+  `pkgutil --expand-full` and count real files.
+- `spctl -a -t exec` on the staged app rejects it with "Unnotarized Developer
+  ID" — correctly, since nothing is notarised until step 6. What can be
+  checked beforehand is what Apple will demand: a Developer ID signature with
+  the hardened-runtime flag actually set.
+
+The standalone is `IS_SYNTH` with an output-only bus, so it never opens an
+input device and needs no `NSMicrophoneUsageDescription` or audio-input
+entitlement. That was verified by launching the hardened-runtime-signed app,
+not by reading the bus layout.
 
 ### No MP3 on Windows
 
