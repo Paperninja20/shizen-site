@@ -33,29 +33,46 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    names and one-line notes are in `index.html`; change them to match
    whatever you actually record.
 6. ~~**The two mode recordings.**~~ Done - `assets/video/shizen-mode.mp4`
-   and `nagare-mode.mp4`, 960x696, with a still from each as the poster so
-   the cards are not black rectangles before play.
+   and `nagare-mode.mp4`, 1280x652, 8s each, with a still from each as the
+   poster so the cards are not black rectangles before play.
 
-   Both carry `preload="none"`: 18MB of video fetched before anyone pressed
-   play would be eighteen times the rest of the page.
+   Both carry `preload="none"`: 17MB of video fetched before anyone pressed
+   play would dwarf the rest of the page.
 
    To replace one: the sources are H.264 `.mov` screen captures, converted
    with the macOS built-in (no ffmpeg needed) -
 
    ```sh
-   avconvert --source IN.mov --output out.mp4 --preset Preset640x480 --replace
-   qlmanage -t -s 960 -o /tmp out.mp4     # a still, for the poster
+   avconvert --source IN.mov --output out.mp4 \
+             --preset Preset1280x720 --duration 8 --replace
+   qlmanage -t -s 1280 -o /tmp out.mp4           # a still, for the poster
+   sips -Z 960 /tmp/out.mp4.png --out p.png      # then to JPEG, see below
+   sips -s format jpeg -s formatOptions 80 p.png --out poster.jpg
    ```
 
-   Use `Preset960x540`: it fits WITHIN that box preserving aspect, so the
-   1.375 full-window captures land at 960x696. `.mode-media` carries
-   `aspect-ratio: 960 / 696` to match exactly - change both together.
+   `Preset1280x720` fits WITHIN that box preserving aspect, so a 2184x1114
+   capture lands at 1280x652. `--duration` trims without a second generation
+   of compression - always re-encode from the `.mov`, never trim the mp4.
 
-   The cards are STACKED, one per row, capped at 900px. Two columns inside a
-   1120px page cannot give a demo more than about 470px, and at that size the
-   pond is a thumbnail. 900 is deliberately under the clips' own 960 so
-   nothing is upscaled - if you ever render the cards wider than 960,
-   re-encode at a larger preset or they will go soft.
+   **Posters are JPEG, not PNG.** These frames carry enough detail that the
+   same 960-wide PNG came out at 715KB against an earlier pair's 179KB. A
+   photographic still does not belong in a lossless format; q80 is 90KB.
+
+   **`.mode-media` is deliberately NARROWER than the clips.** Both recordings
+   carry the plugin window's own vertical border - a dark column at x=0 and
+   x=1279, about (104,103,98) against washi at (228,221,211). Top and bottom
+   are clean. There is no ffmpeg here to re-crop, so `aspect-ratio: 1264/652`
+   against the clips' `1280/652` lets `object-fit: cover` trim 8 native px a
+   side. The crop is constant in the clip's own pixels at any render size,
+   which a `transform: scale` would not be.
+
+   If you re-record, run `tools/check-mode-clip-edges.py shizen` (and
+   `nagare`) - it renders the poster under the real stylesheet and samples the
+   painted edge, because the arithmetic and what the browser paints are
+   different claims.
+
+   The cards are STACKED, one per row, capped at 900px - under the clips' own
+   1280, so nothing is upscaled.
 7. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
    what a pasted link renders as in Discord, X or iMessage. Composed from the
    site's own artwork and the omake wordmark outlines, so it needs no font and

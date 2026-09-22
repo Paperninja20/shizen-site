@@ -416,11 +416,24 @@ section { position: relative; z-index: 2; }
 .mode-media {
   display: block;
   width: 100%;
-  /* Both clips are exactly 960x696, so the ratio is exact and nothing is
-     cropped or letterboxed. (The cropped pair that briefly replaced these
-     differed from each other by 1.1% and needed object-fit: cover to hide
-     it - not the case here.) */
-  aspect-ratio: 960 / 696;
+  /* The clips are 1280x652, and the box is deliberately a shade narrower.
+
+     Both recordings carry the plugin window's own vertical edge: one dark
+     column at x=0 and one at x=1279, RGB about (104,103,98) against washi at
+     (228,221,211). Top and bottom are clean - it is only the sides. There is
+     no ffmpeg or PyObjC here to re-crop the files, so object-fit: cover below
+     is made to do it: with the box narrower than the clip, cover scales to
+     the box HEIGHT and trims the excess width evenly off both sides.
+
+     1264/652 against the clip's 1280/652 trims 8 native px per side, six
+     times the 1.33px line, which leaves room for the scaler to soften an edge
+     without dragging it back into view. The crop is constant in the clip's
+     own pixels whatever size it renders at, which a transform: scale would
+     not be. It costs 0.6% off each side.
+
+     Both clips are exactly the same size, so neither is letterboxed and the
+     pair stay identical to each other. */
+  aspect-ratio: 1264 / 652;
   pointer-events: none;
   border-radius: 4px;
   background: var(--paper-scene);
@@ -749,7 +762,7 @@ section { position: relative; z-index: 2; }
           <p class="mode-sub">let the pond speak</p>
           <video class="mode-media" playsinline muted loop
                  preload="none" disablepictureinpicture
-                 poster="assets/video/shizen-mode-poster.png"
+                 poster="assets/video/shizen-mode-poster.jpg"
                  src="assets/video/shizen-mode.mp4"></video>
         </div>
         <div class="mode">
@@ -757,7 +770,7 @@ section { position: relative; z-index: 2; }
           <p class="mode-sub">stir the waters</p>
           <video class="mode-media" playsinline muted loop
                  preload="none" disablepictureinpicture
-                 poster="assets/video/nagare-mode-poster.png"
+                 poster="assets/video/nagare-mode-poster.jpg"
                  src="assets/video/nagare-mode.mp4"></video>
         </div>
       </div>
