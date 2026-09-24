@@ -25,13 +25,35 @@ Everything below is marked `TODO` in `index.html`. Search for it.
 3. ~~**Support email**~~ Done - `prodjayu@gmail.com` in the footer.
 4. **Demo video.** Replace the dashed `.demo-frame` placeholder with the
    iframe commented directly above it.
-5. **The five demo tracks.** The "Hear the pond" section expects
-   `assets/audio/demo-1.mp3` through `demo-5.mp3`. Until they exist the
-   players render but will not play. Every one carries `preload="none"` on
-   purpose - five audio files fetched before anyone presses anything would
-   dwarf the rest of the page, which is under a megabyte in total. The track
-   names and one-line notes are in `index.html`; change them to match
-   whatever you actually record.
+5. ~~**The five demo tracks.**~~ Done - `assets/audio/demo-1.m4a` through
+   `demo-5.m4a`, 2.3MB in total. Every one carries `preload="none"`: five
+   audio files fetched before anyone presses anything would dwarf the rest of
+   the page.
+
+   **AAC in `.m4a`, not mp3.** macOS decodes mp3 but cannot encode it -
+   `afconvert -f MPG3` fails with `ExtAudioFileSetProperty ('cfmt') failed` -
+   and there is no lame or ffmpeg here. AAC is better per byte anyway and
+   every current browser plays it. The markup asked for `.mp3` until v2.232.
+
+   ```sh
+   afconvert -f WAVE -d LEI16 IN.mp3 IN.wav      # only if the source is mp3
+   python3 tools/normalize-demos.py              # match loudness, see below
+   afconvert -f m4af -d aac -b 192000 norm.wav demo-N.m4a
+   ```
+
+   **They are matched to -18 LUFS, not to peak.** As supplied the five spanned
+   7.84 LU - Glitchy Texture at -23.08 against Cinematic Soundscape at -15.24 -
+   which is plainly audible when stepping between players. Peak normalising
+   would not have fixed it: their peaks were already within 3.3 dB of each
+   other, because a glitchy texture and a pad with the same peak are nowhere
+   near the same loudness.
+
+   -18 is the target because it is the loudest one that needs almost no peak
+   work. Only Glitchy Texture had to be touched, by 1.8 dB, softening 76
+   samples of 834,750 - 0.009%. At -16 it would have needed 3.8 dB, and
+   gain-only with no processing at all would have meant -20.83 for everything,
+   which is too quiet for a preview. After processing the spread is 0.01 LU.
+
 6. ~~**The two mode recordings.**~~ Done - `assets/video/shizen-mode.mp4`
    and `nagare-mode.mp4`, 1280x652, 8s each, with a still from each as the
    poster so the cards are not black rectangles before play.
