@@ -59,6 +59,10 @@
   --wash-lavender: #c3b7d6;
   --seal-red:      #b1543c;
   --gold-thread:   #c8a05e;
+  /* The clips are the only photographic things on the page, and they need
+     an edge to sit against the washi. Solid --ink is too hard a stroke at
+     this weight, so it is the same brown held back to a hairline. */
+  --ink-hairline:  rgba(51, 44, 35, 0.22);
 
   /* One live face, not two. The display HEADINGS are omake outlines now
      (site/tools/make-type.py), so the other face was left setting only the small bits -
@@ -198,12 +202,24 @@ a  { color: var(--seal-red); }
 /* --- hero --------------------------------------------------------------- */
 .hero {
   position: relative; z-index: 2;
-  display: grid; gap: clamp(28px, 5vw, 56px);
+  display: grid; gap: clamp(28px, 4vw, 48px);
   grid-template-columns: 1fr;
-  padding-block: clamp(28px, 6vw, 68px) clamp(40px, 8vw, 96px);
+  padding-block: clamp(28px, 6vw, 68px) clamp(28px, 4.5vw, 56px);
   align-items: center;
 }
-@media (min-width: 900px) { .hero { grid-template-columns: 1.02fr 1fr; } }
+/* v2.237.1: the clip is the hero, so give it room. Widening the row evenly
+   would drag the copy left of the logo and every heading below it, so the
+   row keeps the page's left edge and grows rightward instead: the clip
+   bleeds toward the margin, the copy stays on the grid. */
+@media (min-width: 900px) {
+  .wrap.hero-wrap {
+    width: auto;
+    margin-left: max(0px, calc((100% - 1120px) / 2));   /* the page's own left edge */
+    margin-right: 0;
+    max-width: 1280px;                                   /* and not silly on ultrawide */
+  }
+  .hero { grid-template-columns: 0.74fr 1.26fr; }
+}
 
 .hero .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 26px; }
 .price-note { font-size: 0.9rem; color: var(--ink-soft); }
@@ -219,55 +235,63 @@ a  { color: var(--seal-red); }
 }
 
 /* The pond. Real sprites from the plugin, laid out the way they sit in it. */
+/* v2.237.0: the hero is the plugin itself now, not a composition of its
+   sprites. v2.237.1 dropped the border; v2.237.2 puts a hairline back, dark
+   brown rather than the old fiber, and rounds the corners harder - the same
+   edge the mode clips now carry. overflow:hidden has to stay either way: it
+   is what clips the scale() below that hides the capture's window edge. */
 .pond {
   position: relative;
-  aspect-ratio: 1070 / 700;
-  /* Its own blooms, in the plugin's original pixel proportions. The page
-     behind it is now the same sheet, so without these the frame would read
-     as a blank rectangle cut out of the wash. */
-  background:
-    radial-gradient(ellipse 30% 38% at 14% 22%, rgba(159,192,209,0.26), transparent 68%),
-    radial-gradient(ellipse 26% 34% at 78% 30%, rgba(220,177,172,0.20), transparent 70%),
-    radial-gradient(ellipse 28% 36% at 55% 78%, rgba(167,193,157,0.22), transparent 70%),
-    radial-gradient(ellipse 22% 31% at 90% 85%, rgba(195,183,214,0.18), transparent 70%),
-    var(--paper-scene);
-  border: 1.5px solid var(--paper-fiber);
-  border-radius: 4px;
-  box-shadow: 0 14px 34px rgba(80,64,44,0.13), inset 0 0 60px rgba(217,198,163,0.28);
+  aspect-ratio: 960 / 696;          /* the clip's own, so nothing letterboxes */
+  border: 1.5px solid var(--ink-hairline);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(80,64,44,0.13);
   overflow: hidden;
+  background: var(--paper-scene);   /* what shows until the clip arrives */
 }
-.pond img { position: absolute; user-select: none; -webkit-user-drag: none; }
-.pond .ripple { inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-.pond .plant { bottom: 4%; }
-.pond .fish { will-change: transform; }
-
-.p-coral   { left: 6%;  width: 21%; }
-.p-anemone { left: 68%; width: 19%; }
-.p-grass   { left: 38%; width: 17%; bottom: 1%; }
-.f-koi     { left: 20%; top: 26%; width: 20%; transform: rotate(-7deg); }
-.f-betta   { left: 52%; top: 15%; width: 17%; transform: rotate(5deg) scaleX(-1); }
-.f-tile    { left: 60%; top: 52%; width: 16%; transform: rotate(-3deg); }
-.f-tetra   { left: 12%; top: 58%; width: 14%; transform: rotate(8deg) scaleX(-1); }
-
-@media (prefers-reduced-motion: no-preference) {
-  .pond .fish { animation: drift 9s ease-in-out infinite; }
-  .f-betta { animation-duration: 11s; animation-delay: -3s; }
-  .f-tile  { animation-duration: 13s; animation-delay: -6s; }
-  .f-tetra { animation-duration: 10s; animation-delay: -1.5s; }
-  @keyframes drift {
-    0%, 100% { translate: 0 0; }
-    50%      { translate: 3% -4%; }
-  }
+.pond video {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  /* The capture carries the plugin window's own edge, and this one is
+     ASYMMETRIC: about 2px dark down the left and 1px across the top at
+     1280, nothing on the right or bottom. The mode clips hide theirs by
+     making the box narrower than the clip, but that crops evenly and would
+     spend on two clean edges to clear two dirty ones. Inside a frame that
+     already clips, a small scale is enough: 1.2% pushes ~5.8px horizontally
+     and ~4.2px vertically past the edge, well over what is there. */
+  transform: scale(1.012);
 }
 
 /* --- generic section ---------------------------------------------------- */
 section { position: relative; z-index: 2; }
-.band { padding-block: clamp(44px, 6vw, 82px); }
+/* v2.236.0: closer together. 44-82px top AND bottom put up to 164px between
+   sections, which read as gaps rather than as breathing room. v2.237.3 pulls
+   them in again, to 84px between bands, and takes the hero's oversized bottom
+   padding down with them - it was leaving 148px under the hero against 108
+   everywhere else, which is the seam that read as empty. */
+.band { padding-block: clamp(24px, 3vw, 42px); }
 .band + .band { border-top: 1.5px solid rgba(217,198,163,0.55); }
 .band-head { max-width: var(--measure); margin-bottom: clamp(28px, 4vw, 52px); }
 .eyebrow {
   font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--seal-red); margin-bottom: 10px;
+}
+
+/* The note is prose, so it gets a reading measure rather than the full column
+   width, and no display heading: a personal aside wants a quieter entrance
+   than the omake outlines the product sections use. */
+/* The note is prose, so it gets a reading measure rather than the full column
+   width, and no display heading: a personal aside wants a quieter entrance
+   than the omake outlines the product sections use. */
+.note { max-width: 42rem; }
+
+/* Bigger than the eyebrows on the product sections - this one IS the heading
+   for its section rather than a label above one. */
+#note .eyebrow { font-size: 1.05rem; letter-spacing: 0.16em; margin-bottom: 16px; }
+.note p { margin: 0; }
+.note-sign {
+  margin-top: 14px !important;
+  font-size: 0.85rem; letter-spacing: 0.08em;
+  color: var(--ink-soft);
 }
 
 /* --- steps -------------------------------------------------------------- */
@@ -286,21 +310,85 @@ section { position: relative; z-index: 2; }
 .step p { font-size: 0.97em; }
 
 /* --- the demos ---------------------------------------------------------- */
+/* Two columns from 760px, so five tracks do not run a page deep. Below that
+   they stack, because a waveform in half a phone is not a waveform. */
 .tracks { list-style: none; margin: 0; padding: 0; max-width: 620px; }
+@media (min-width: 760px) {
+  .tracks {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(26px, 3.4vw, 48px);
+    max-width: none;
+  }
+  /* The rule above a track separates it from the one before. In one column
+     that is every track but the first; in two it is every track but the first
+     of EACH column, or column two starts with a line under nothing. */
+  .track:nth-child(-n+2) { border-top: 0; padding-top: 0; }
+}
+/* The original rule, full width at 0.7, with more air around it: 14px of
+   padding either side became 22px, so the line sits in its own space rather
+   than close under the waveform above it. */
 .track {
-  padding: 14px 0;
+  padding: 22px 0;
   border-top: 1px solid rgba(217,198,163,0.7);
 }
 .track:first-child { border-top: 0; padding-top: 0; }
-.track-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 7px; }
-.track-name { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); }
-.track-note {
-  font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+/* v2.234.0: one title a track, not a name and a note.
+   Set like the old note - upper case, letter-spaced, ink-soft - because that
+   is the register the section wants, just larger now that it carries the
+   whole label rather than qualifying a name beside it. */
+.track-head { margin-bottom: 9px; }
+.track-title {
+  font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--ink-soft); opacity: 0.8;
 }
-/* The native control: styling it beyond width is a losing fight across
-   browsers, and it already reads as "press this to hear it". */
-.track audio { width: 100%; height: 36px; display: block; }
+/* v2.233.0: a drawn waveform instead of the native bar.
+   The <audio> stays - it is the thing that actually plays, so the browser's
+   own decoding, buffering and media-session handling are untouched - but it
+   is hidden and driven by the controls below. */
+.track audio { display: none; }
+
+.player {
+  display: flex; align-items: center; gap: 12px;
+  /* Scrubbing is a drag, and a drag over text selects it - which paints
+     the blue selection box across the row. The tap highlight is the same
+     problem on touch, in a different colour. */
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.play-btn {
+  flex: none; width: 34px; height: 34px; padding: 0;
+  border: 1px solid rgba(217,198,163,0.9); border-radius: 50%;
+  background: var(--paper-base); color: var(--ink);
+  cursor: pointer; display: grid; place-items: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.play-btn:hover { background: var(--paper-scene); border-color: var(--ink-soft); }
+/* :focus off, :focus-visible on - a click should leave no ring, a Tab must.
+   Blanket `outline: none` would take the keyboard affordance with it. */
+.play-btn:focus { outline: none; }
+.play-btn:focus-visible { outline: 2px solid var(--ink-soft); outline-offset: 2px; }
+.play-btn svg { width: 12px; height: 13px; fill: currentColor; display: block; }
+/* One button, two glyphs, and which one shows is all that moves. Swapping
+   innerHTML on every play/pause would re-parse markup in a click handler. */
+.play-btn .icon-pause { display: none; }
+.track.is-playing .play-btn .icon-play { display: none; }
+.track.is-playing .play-btn .icon-pause { display: block; }
+
+.wave {
+  flex: 1 1 auto; height: 30px; cursor: pointer; display: block;
+  touch-action: none;          /* a drag scrubs rather than scrolling the page */
+}
+.wave:focus { outline: none; }
+.wave:focus-visible { outline: 2px solid var(--ink-soft); outline-offset: 3px; }
+.wave rect { fill: rgba(122,109,91,0.28); }
+.wave .played rect { fill: var(--ink); }
+
+.track-time {
+  flex: none; font-size: 0.78rem; letter-spacing: 0.06em;
+  color: var(--ink-soft); font-variant-numeric: tabular-nums;
+  min-width: 4.2em; text-align: right;
+}
 
 /* --- fish types --------------------------------------------------------- */
 .types { display: grid; gap: clamp(20px, 3vw, 30px); grid-template-columns: repeat(2, 1fr); }
@@ -432,10 +520,15 @@ section { position: relative; z-index: 2; }
      not be. It costs 0.6% off each side.
 
      Both clips are exactly the same size, so neither is letterboxed and the
-     pair stay identical to each other. */
+     pair stay identical to each other.
+
+     v2.237.2 added the border. box-sizing is border-box, so it comes off the
+     content box the crop is measured against: the trim drops from 8 native px
+     per side to about 6, still well clear of the 1.33px line. */
   aspect-ratio: 1264 / 652;
   pointer-events: none;
-  border-radius: 4px;
+  border: 1.5px solid var(--ink-hairline);
+  border-radius: 10px;
   background: var(--paper-scene);
   object-fit: cover;
 }
@@ -536,7 +629,7 @@ section { position: relative; z-index: 2; }
 <main id="top">
 
   <!-- ================= hero ================= -->
-  <div class="wrap">
+  <div class="wrap hero-wrap">
     <section class="hero">
       <div class="hero-copy">
         <h1><picture><source media="(max-width: 700px)" srcset="assets/type/h1-hero-narrow.svg"><img src="assets/type/h1-hero-wide.svg" alt="A pond that plays itself."></picture></h1>
@@ -565,14 +658,10 @@ section { position: relative; z-index: 2; }
       </div>
 
       <div class="pond" aria-hidden="true">
-        <img class="ripple" src="assets/img/ripple-1.png" alt="">
-        <img class="plant p-coral"   src="assets/img/coral-1.png" alt="">
-        <img class="plant p-grass"   src="assets/img/seagrass-1.png" alt="">
-        <img class="plant p-anemone" src="assets/img/anemone-1.png" alt="">
-        <img class="fish f-koi"   src="assets/img/fish-normal-koi-1.png" alt="">
-        <img class="fish f-betta" src="assets/img/fish-pad-betta-1.png" alt="">
-        <img class="fish f-tile"  src="assets/img/fish-striped-tilefish-1.png" alt="">
-        <img class="fish f-tetra" src="assets/img/fish-normal-neontetra-1.png" alt="">
+        <video class="hero-clip" playsinline muted loop
+               preload="none" disablepictureinpicture
+               poster="assets/video/hero-clip-poster.jpg"
+               src="assets/video/hero-clip.mp4"></video>
       </div>
     </section>
   </div>
@@ -595,38 +684,88 @@ section { position: relative; z-index: 2; }
       <ol class="tracks">
           <li class="track">
             <div class="track-head">
-              <span class="track-name">Glitchy Texture</span>
-              <span class="track-note">broken up, close</span>
+              <span class="track-title">Glitches/Textures</span>
             </div>
-            <audio controls preload="none" src="assets/audio/demo-1.m4a"></audio>
+            <div class="player" data-peaks="demo-1">
+              <button class="play-btn" type="button" aria-label="Play Glitches/Textures">
+                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
+              </button>
+              <svg class="wave" role="slider" tabindex="0"
+                   aria-label="Seek within Glitches/Textures"
+                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
+              <span class="track-time">0:00</span>
+              <audio preload="none" src="assets/audio/demo-1.m4a"></audio>
+            </div>
           </li>
           <li class="track">
             <div class="track-head">
-              <span class="track-name">Cinematic Soundscape</span>
-              <span class="track-note">wide and slow</span>
+              <span class="track-title">Lush Pads/Ambiences</span>
             </div>
-            <audio controls preload="none" src="assets/audio/demo-2.m4a"></audio>
+            <div class="player" data-peaks="demo-3">
+              <button class="play-btn" type="button" aria-label="Play Lush Pads/Ambiences">
+                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
+              </button>
+              <svg class="wave" role="slider" tabindex="0"
+                   aria-label="Seek within Lush Pads/Ambiences"
+                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
+              <span class="track-time">0:00</span>
+              <audio preload="none" src="assets/audio/demo-3.m4a"></audio>
+            </div>
           </li>
           <li class="track">
             <div class="track-head">
-              <span class="track-name">Beautiful Pad</span>
-              <span class="track-note">pads and long tails</span>
+              <span class="track-title">Gorgeous Atmospheres</span>
             </div>
-            <audio controls preload="none" src="assets/audio/demo-3.m4a"></audio>
+            <div class="player" data-peaks="demo-5">
+              <button class="play-btn" type="button" aria-label="Play Gorgeous Atmospheres">
+                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
+              </button>
+              <svg class="wave" role="slider" tabindex="0"
+                   aria-label="Seek within Gorgeous Atmospheres"
+                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
+              <span class="track-time">0:00</span>
+              <audio preload="none" src="assets/audio/demo-5.m4a"></audio>
+            </div>
           </li>
           <li class="track">
             <div class="track-head">
-              <span class="track-name">Melodic Randomness</span>
-              <span class="track-note">sparse and clustered</span>
+              <span class="track-title">Evolving Soundscapes</span>
             </div>
-            <audio controls preload="none" src="assets/audio/demo-4.m4a"></audio>
+            <div class="player" data-peaks="demo-2">
+              <button class="play-btn" type="button" aria-label="Play Evolving Soundscapes">
+                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
+              </button>
+              <svg class="wave" role="slider" tabindex="0"
+                   aria-label="Seek within Evolving Soundscapes"
+                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
+              <span class="track-time">0:00</span>
+              <audio preload="none" src="assets/audio/demo-2.m4a"></audio>
+            </div>
           </li>
           <li class="track">
             <div class="track-head">
-              <span class="track-name">Ambient Loops</span>
-              <span class="track-note">low and drifting</span>
+              <span class="track-title">Happy Accidents</span>
             </div>
-            <audio controls preload="none" src="assets/audio/demo-5.m4a"></audio>
+            <div class="player" data-peaks="demo-4">
+              <button class="play-btn" type="button" aria-label="Play Happy Accidents">
+                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
+              </button>
+              <svg class="wave" role="slider" tabindex="0"
+                   aria-label="Seek within Happy Accidents"
+                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
+              <span class="track-time">0:00</span>
+              <audio preload="none" src="assets/audio/demo-4.m4a"></audio>
+            </div>
           </li>
       </ol>
     </section>
@@ -790,6 +929,26 @@ section { position: relative; z-index: 2; }
     </section>
   </div>
 
+  <!-- ================= a note ================= -->
+  <div class="wrap">
+    <section class="band" id="note">
+      <p class="eyebrow">A note</p>
+      <div class="note">
+        <p>
+          Hey guys! I&rsquo;m Jayu, a producer who loves making nostalgic beats and
+          ambient music. The idea for Shizen came from chasing happy accidents, those
+          joyful moments in producing when something you didn&rsquo;t plan turns out
+          better than what you did. &ldquo;Shizen&rdquo; translates as
+          &ldquo;nature&rdquo;, but it also carries a deeper meaning. It&rsquo;s about
+          letting nature take its own course, allowing it to follow its own rhythm and
+          harmony. I think there is real beauty in embracing that randomness, and
+          it&rsquo;s the life force behind this plugin. Oh, and I also really love fish!
+        </p>
+        <p class="note-sign">-Jayu</p>
+      </div>
+    </section>
+  </div>
+
   <!-- ================= buy ================= -->
   <div class="wrap">
     <section class="band" id="buy">
@@ -932,6 +1091,180 @@ section { position: relative; z-index: 2; }
 <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
 
 <script>
+  // v2.233.0: the demo players.
+  //
+  // A drawn waveform rather than the native control, filling in as it plays.
+  // The <audio> element is still what plays - hidden, but doing the decoding,
+  // buffering and media-session work - so nothing here reimplements playback.
+  //
+  // The peaks are computed offline by tools/make-waveforms.py and inlined,
+  // 96 bars a track and under 3KB for all five. Drawing them in the browser
+  // would mean fetching and decoding every file on load, which is exactly what
+  // preload="none" is there to avoid: the waveform is on screen before a byte
+  // of audio is asked for.
+  (function demoPlayers() {
+    var PEAKS = {"demo-1":[1.0,0.329,0.251,0.99,0.948,0.475,0.61,0.615,0.31,0.421,0.353,0.094,0.385,0.296,0.916,0.692,0.612,0.999,0.852,0.918,0.716,0.512,0.535,0.48,0.916,0.202,0.479,0.313,0.379,0.313,0.976,0.701,0.626,0.423,0.319,0.176,0.14,0.919,0.684,0.792,0.514,0.47,0.691,0.872,0.577,0.75,0.447,0.766,0.365,0.477,0.164,0.951,0.352,0.444,0.97,1.0,0.492,0.838,0.975,0.523,0.894,0.443,0.484,0.54,0.625,0.594,0.413,0.135,0.3,0.218,0.389,0.215,0.14,0.353,0.124,0.344,0.264,0.864,0.361,0.093,0.42,0.406,0.486,0.496,0.74,0.474,0.42,0.471,0.348,0.997,0.754,0.99,0.5,0.995,0.693,0.196],"demo-2":[0.431,0.489,0.527,0.613,0.65,0.75,0.679,0.686,0.736,0.729,0.635,0.655,0.714,0.77,0.87,0.602,0.639,0.63,0.615,0.663,0.778,0.799,0.884,0.801,0.93,0.901,0.908,0.756,0.718,0.749,0.809,0.73,0.733,0.816,1.0,0.823,0.838,0.765,0.805,0.809,0.928,0.818,0.697,0.644,0.634,0.677,0.708,0.751,0.671,0.629,0.577,0.523,0.594,0.721,0.633,0.659,0.667,0.678,0.698,0.675,0.749,0.801,0.757,0.807,0.77,0.718,0.67,0.586,0.676,0.655,0.74,0.672,0.562,0.579,0.46,0.497,0.538,0.575,0.552,0.562,0.495,0.501,0.4,0.397,0.418,0.356,0.278,0.227,0.2,0.144,0.091,0.069,0.047,0.027,0.011,0.003],"demo-3":[0.384,0.426,0.488,0.571,0.489,0.652,0.711,0.562,0.667,0.506,0.496,0.424,0.452,0.367,0.457,0.523,0.468,0.479,0.573,0.631,0.606,0.709,0.622,0.624,0.506,0.592,0.617,0.519,0.561,0.525,0.645,0.69,0.884,0.818,0.865,0.722,0.717,0.686,0.654,0.6,0.712,0.747,0.772,0.783,0.758,0.825,0.809,0.772,0.828,0.805,0.783,0.695,0.915,0.734,0.947,0.92,0.718,0.921,0.76,0.95,0.863,0.831,0.842,1.0,0.755,0.8,0.724,0.745,0.935,0.991,0.877,0.92,0.889,0.837,0.783,0.673,0.636,0.605,0.644,0.436,0.496,0.495,0.513,0.418,0.445,0.342,0.377,0.267,0.235,0.19,0.147,0.099,0.06,0.044,0.018,0.004],"demo-4":[0.035,0.133,0.169,0.403,0.45,0.631,0.866,0.889,0.899,0.729,0.863,0.853,1.0,0.69,0.526,0.727,0.618,0.606,0.382,0.412,0.4,0.362,0.429,0.338,0.362,0.323,0.257,0.293,0.448,0.81,0.586,0.417,0.799,0.569,0.622,0.59,0.885,0.761,0.734,0.796,0.798,0.833,0.746,0.548,0.656,0.522,0.612,0.595,0.529,0.515,0.451,0.419,0.403,0.643,0.691,0.636,0.434,0.499,0.459,0.502,0.585,0.602,0.656,0.584,0.603,0.723,0.628,0.525,0.559,0.626,0.612,0.59,0.701,0.616,0.714,0.566,0.542,0.42,0.515,0.515,0.416,0.314,0.219,0.236,0.209,0.222,0.12,0.058,0.064,0.051,0.044,0.031,0.016,0.013,0.005,0.001],"demo-5":[0.459,0.549,0.64,0.51,0.617,0.726,0.588,0.624,0.693,0.738,0.716,0.627,0.691,0.637,0.665,0.632,0.597,0.698,0.637,0.682,0.622,0.655,0.563,0.476,0.469,0.4,0.476,0.504,0.56,0.644,0.711,0.668,0.933,0.789,0.731,0.89,0.837,0.834,0.697,0.718,0.745,0.499,0.563,0.654,0.505,0.477,0.589,0.486,0.604,0.63,0.652,0.599,0.716,0.576,0.611,0.574,0.673,0.772,0.589,0.739,0.669,0.675,0.603,0.548,0.621,0.656,0.643,0.722,0.614,0.855,0.536,0.461,0.485,0.495,0.559,0.555,0.607,0.641,0.615,0.798,0.903,1.0,0.842,0.753,0.886,0.868,0.944,0.729,0.681,0.592,0.648,0.628,0.618,0.589,0.541,0.506]};
+
+    var players = [].slice.call(document.querySelectorAll('.player[data-peaks]'));
+    if (! players.length) return;
+
+    var SVG = 'http://www.w3.org/2000/svg';
+
+    function fmt(t) {
+      if (! isFinite(t) || t < 0) t = 0;
+      var m = Math.floor(t / 60), s = Math.floor(t % 60);
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    players.forEach(function (player) {
+      var peaks = PEAKS[player.getAttribute('data-peaks')];
+      if (! peaks) return;
+
+      var track = player.closest('.track');
+      var audio = player.querySelector('audio');
+      var btn   = player.querySelector('.play-btn');
+      var wave  = player.querySelector('.wave');
+      var time  = player.querySelector('.track-time');
+
+      // A viewBox in bar units, with preserveAspectRatio="none" on the
+      // element, so the drawing stretches to whatever width the column is
+      // without measuring anything or listening for resizes.
+      var BAR = 3, GAP = 1, H = 100;
+      var W = peaks.length * (BAR + GAP);
+      wave.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+      function bars(cls) {
+        var g = document.createElementNS(SVG, 'g');
+        if (cls) g.setAttribute('class', cls);
+        peaks.forEach(function (v, i) {
+          // A floor of 2 units: a silent passage should still read as part of
+          // the track rather than as a gap in it.
+          var h = Math.max(2, v * H);
+          var r = document.createElementNS(SVG, 'rect');
+          r.setAttribute('x', i * (BAR + GAP));
+          r.setAttribute('y', (H - h) / 2);
+          r.setAttribute('width', BAR);
+          r.setAttribute('height', h);
+          r.setAttribute('rx', 1);
+          g.appendChild(r);
+        });
+        return g;
+      }
+
+      // Two copies of the same bars: the pale one underneath, the ink one
+      // clipped to how far in we are. Clipping one number per timeupdate is
+      // cheaper than restyling 160 rects, and it fills mid-bar rather than
+      // snapping bar to bar.
+      var clipId = 'played-' + player.getAttribute('data-peaks');
+      var defs = document.createElementNS(SVG, 'defs');
+      var clip = document.createElementNS(SVG, 'clipPath');
+      clip.setAttribute('id', clipId);
+      var clipRect = document.createElementNS(SVG, 'rect');
+      clipRect.setAttribute('x', 0); clipRect.setAttribute('y', 0);
+      clipRect.setAttribute('width', 0); clipRect.setAttribute('height', H);
+      clip.appendChild(clipRect); defs.appendChild(clip); wave.appendChild(defs);
+
+      wave.appendChild(bars(null));
+      var played = bars('played');
+      played.setAttribute('clip-path', 'url(#' + clipId + ')');
+      wave.appendChild(played);
+
+      function progress() {
+        var d = audio.duration;
+        return (isFinite(d) && d > 0) ? (audio.currentTime / d) : 0;
+      }
+
+      function paint() {
+        var f = progress();
+        clipRect.setAttribute('width', f * W);
+        wave.setAttribute('aria-valuenow', Math.round(f * 100));
+        wave.setAttribute('aria-valuetext', Math.round(f * 100) + '%');
+        time.textContent = fmt(audio.currentTime) +
+          (isFinite(audio.duration) ? ' / ' + fmt(audio.duration) : '');
+      }
+
+      function seekTo(fraction) {
+        if (! isFinite(audio.duration) || audio.duration <= 0) return;
+        audio.currentTime = Math.max(0, Math.min(1, fraction)) * audio.duration;
+        paint();
+      }
+
+      btn.addEventListener('click', function () {
+        if (audio.paused) {
+          // One at a time. Two ponds at once is noise, not a comparison.
+          players.forEach(function (other) {
+            if (other !== player) other.querySelector('audio').pause();
+          });
+          audio.play().catch(function () {});
+        } else {
+          audio.pause();
+        }
+      });
+
+      // The button's label has to follow what it will DO next, and name the
+      // track while doing it. It read "Pause demo-1" before - the data
+      // attribute rather than the title - and never went back to "Play".
+      var titleEl = track.querySelector('.track-title');
+      var title = titleEl ? titleEl.textContent.trim() : '';
+
+      audio.addEventListener('play',  function () {
+        track.classList.add('is-playing');
+        btn.setAttribute('aria-label', 'Pause ' + title);
+      });
+      audio.addEventListener('pause', function () {
+        track.classList.remove('is-playing');
+        btn.setAttribute('aria-label', 'Play ' + title);
+      });
+      audio.addEventListener('ended', function () {
+        track.classList.remove('is-playing');
+        btn.setAttribute('aria-label', 'Play ' + title);
+        audio.currentTime = 0;
+        paint();
+      });
+      audio.addEventListener('timeupdate', paint);
+      // Scrubbing while PAUSED does not reliably raise timeupdate; seeked does.
+      audio.addEventListener('seeked', paint);
+      audio.addEventListener('loadedmetadata', paint);
+
+      // Pointer scrubbing, press through release, on the element itself so a
+      // drag that leaves the waveform still tracks.
+      var scrubbing = false;
+      function fractionFromEvent(e) {
+        var r = wave.getBoundingClientRect();
+        return r.width ? (e.clientX - r.left) / r.width : 0;
+      }
+      wave.addEventListener('pointerdown', function (e) {
+        scrubbing = true;
+        // Capture is a nicety - it keeps a drag tracking after the pointer
+        // leaves the box. It throws for a pointer the element never saw, so
+        // losing it must not take the seek with it.
+        try { wave.setPointerCapture(e.pointerId); } catch (err) {}
+        seekTo(fractionFromEvent(e));
+      });
+      wave.addEventListener('pointermove', function (e) {
+        if (scrubbing) seekTo(fractionFromEvent(e));
+      });
+      wave.addEventListener('pointerup', function () { scrubbing = false; });
+
+      // The native control came with a keyboard for free; replacing it means
+      // putting one back. Arrows nudge, Home/End jump, space toggles.
+      wave.addEventListener('keydown', function (e) {
+        var d = audio.duration;
+        if (! isFinite(d)) return;
+        var step = e.shiftKey ? 10 : 5;
+        if (e.key === 'ArrowRight')      seekTo((audio.currentTime + step) / d);
+        else if (e.key === 'ArrowLeft')  seekTo((audio.currentTime - step) / d);
+        else if (e.key === 'Home')       seekTo(0);
+        else if (e.key === 'End')        seekTo(1);
+        else if (e.key === ' ' || e.key === 'Enter') btn.click();
+        else return;
+        e.preventDefault();
+      });
+
+      paint();
+    });
+  })();
+
   // The mode demos behave like GIFs: no controls, looping, and started only
   // when they are actually on screen. preload="none" means nothing is
   // fetched until play() is called, so scrolling past is free.
@@ -939,7 +1272,10 @@ section { position: relative; z-index: 2; }
   // Paused on the way out as well - two clips decoding forever in a
   // background tab is work nobody asked for.
   (function modeDemos() {
-    var vids = [].slice.call(document.querySelectorAll('video.mode-media'));
+    // The hero clip loops on the same terms as the mode demos: started when
+      // it is on screen, paused when it is not.
+      var vids = [].slice.call(
+        document.querySelectorAll('video.mode-media, video.hero-clip'));
     if (! vids.length) return;
 
     if (! ('IntersectionObserver' in window)) {

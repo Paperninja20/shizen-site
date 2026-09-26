@@ -30,6 +30,21 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    audio files fetched before anyone presses anything would dwarf the rest of
    the page.
 
+   **Drawn waveforms, not the native control.** Each player is a play button,
+   an SVG waveform that fills in as it plays, and a time readout. The
+   `<audio>` element is still what plays - hidden, but doing the decoding and
+   buffering - so nothing reimplements playback.
+
+   The peaks are computed offline by `tools/make-waveforms.py` and inlined
+   into `index.html`: 96 bars a track, under 3KB for all five. Drawing them
+   in the browser would mean fetching and decoding every file on load, which
+   is the thing `preload="none"` exists to prevent. Re-run it if the audio
+   changes, against the NORMALIZED wavs so the picture matches what plays.
+
+   Replacing the native control means replacing the keyboard it came with:
+   the waveform is a `role="slider"` with arrows to nudge, Shift+arrow for
+   ten seconds, Home/End, and space to toggle.
+
    **AAC in `.m4a`, not mp3.** macOS decodes mp3 but cannot encode it -
    `afconvert -f MPG3` fails with `ExtAudioFileSetProperty ('cfmt') failed` -
    and there is no lame or ffmpeg here. AAC is better per byte anyway and
@@ -120,9 +135,20 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    amount that differs per file, so the arithmetic cannot tell you.
    `og:image` and `og:url` are absolute and name the live host - update both
    when a real domain is pointed at the page.
-8. **A real screenshot.** The hero currently composes the plugin's own
-   sprites into a pond, which looks right but is not the product. One honest
-   screenshot of the actual window will sell it better than the composition.
+8. ~~**A real screenshot.**~~ Done, and better than a screenshot: the hero is
+   `assets/video/hero-clip.mp4`, 960x696, 8s, the actual plugin running. The
+   composed sprites it replaced looked right but were not the product.
+
+   It loops on the same terms as the mode clips - `preload="none"`, started
+   and paused by the same IntersectionObserver - and sits in the frame the
+   pond used, border and radius and shadow unchanged.
+
+   **The capture's window edge is cropped by a scale, not by the box.** This
+   one is asymmetric: about 2px dark down the left and 1px across the top,
+   nothing right or bottom. The mode clips narrow their box so `object-fit:
+   cover` trims evenly, which here would spend on two clean edges to clear
+   two dirty ones. `.pond` already clips, so `transform: scale(1.012)` on the
+   video is enough.
 
 ## Checkout
 
@@ -216,7 +242,13 @@ the rest of the page staying omake.
 
 ## Deploying
 
-**Live at https://paperninja20.github.io/shizen-site/**
+**Live at https://jayubeats.com/**
+
+The apex is a custom domain on GitHub Pages. `site/CNAME` is what sets it,
+and it has to live HERE rather than only in the published repo: publish.sh
+rsyncs with `--delete`, so a CNAME created through GitHub's settings page
+would be removed on the next publish and the domain would silently revert to
+the github.io address.
 
 To publish a change:
 

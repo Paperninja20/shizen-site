@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shizen — Jayu Beats</title>
+
+<!--
+  A stable address for Shizen, pointing at the page that currently lives at
+  the site root.
+
+  Why it exists: with one product, the Shizen page IS the site, and marketing
+  links naturally go to the bare domain. The moment a SECOND product ships,
+  the root has to become a real homepage and Shizen moves down here - at
+  which point every link that said "the root" and meant "Shizen" has quietly
+  become a link to a product grid. YouTube descriptions, an Instagram bio and
+  forum posts are not things that can be edited afterwards.
+
+  So marketing points at /shizen/ from the start. Today it forwards to the
+  root; later it simply holds the page itself and the forward is deleted.
+  Either way the link never breaks.
+
+  The target is RELATIVE ("../") on purpose. Served from a GitHub Pages
+  project path the site root is /shizen-site/, and on a custom domain it is
+  /. An absolute "/" would be right in one case and wrong in the other;
+  "../" is right in both.
+
+  Three ways out, because any one of them can be disabled: the script (fast,
+  and replaces rather than pushes so Back still works), the meta refresh (no
+  JS), and the link (neither).
+-->
+
+<link rel="canonical" href="../">
+<meta http-equiv="refresh" content="0; url=../">
+<meta name="robots" content="noindex, follow">
+
+<script>
+  // replace(), not assign() - otherwise Back lands here and bounces forward
+  // again, trapping the visitor.
+  location.replace('../' + location.hash);
+</script>
+
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: grid; place-items: center;
+    background: #f7f2e9; color: #332c23;
+    font: 16px/1.6 'Zen Kurenaido', 'Avenir Next', system-ui, sans-serif;
+    text-align: center; padding: 24px;
+  }
+  a { color: #b1543c; }
+</style>
+</head>
+<body>
+  <p>
+    Taking you to Shizen&hellip;<br>
+    <a href="../">Continue</a>
+  </p>
+</body>
+</html>
