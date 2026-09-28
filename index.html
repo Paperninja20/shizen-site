@@ -234,7 +234,11 @@ a  { color: var(--seal-red); }
 }
 .btn-buy:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(120,52,36,0.55); }
 .btn-buy:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(120,52,36,0.55); }
-.btn-ghost { border-color: var(--paper-fiber); color: var(--ink); background: transparent; }
+/* Matched to .btn-buy's HEIGHT, not its type size. The two sit on one row,
+   and 66 next to 50 reads as a mistake rather than as hierarchy - which
+   the fill and the type size already carry on their own. */
+.btn-ghost { border-color: var(--paper-fiber); color: var(--ink); background: transparent;
+             padding: 24px 30px; }
 .btn-ghost:hover { border-color: var(--ink-soft); }
 @media (prefers-reduced-motion: reduce) { .btn:hover, .btn:active { transform: none; } }
 
@@ -693,7 +697,7 @@ section { position: relative; z-index: 2; }
                opens at a different number than the one that was clicked. -->
           <a class="btn btn-buy lemonsqueezy-button"
              href="https://jayusounds.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
-            <span class="was">$39.99</span>$29.99
+            Buy <span class="was">$39.99</span>$29.99
           </a>
           <a class="btn btn-ghost" href="#hear">Hear it first</a>
         </div>
@@ -1008,7 +1012,7 @@ section { position: relative; z-index: 2; }
 
         <a class="btn btn-buy lemonsqueezy-button"
            href="https://jayusounds.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
-          $29.99
+          Buy $29.99
         </a>
 
         <p class="small muted" style="margin:20px auto 0">
