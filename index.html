@@ -215,6 +215,22 @@ a  { color: var(--seal-red); }
 .btn-buy {
   background: var(--seal-red); color: #fdf8ef;
   box-shadow: 0 3px 0 rgba(120,52,36,0.55);
+  /* The price IS the label now, so it carries the weight the words used to.
+     Bigger type, more air, and the display face rather than the body one -
+     at this size the body face reads thin against the seal red. */
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  padding: 20px 42px;
+}
+/* The old price, struck, sitting inside the button ahead of the new one.
+   Softened against the red rather than a flat grey, so it reads as the same
+   ink at lower weight instead of a different element. */
+.btn-buy .was {
+  font-size: 0.62em;
+  opacity: 0.62;
+  text-decoration: line-through;
+  margin-right: 0.5em;
+  font-weight: 400;
 }
 .btn-buy:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(120,52,36,0.55); }
 .btn-buy:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(120,52,36,0.55); }
@@ -677,11 +693,11 @@ section { position: relative; z-index: 2; }
                opens at a different number than the one that was clicked. -->
           <a class="btn btn-buy lemonsqueezy-button"
              href="https://jayusounds.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
-            Buy Shizen — $29.99
+            <span class="was">$39.99</span>$29.99
           </a>
           <a class="btn btn-ghost" href="#hear">Hear it first</a>
         </div>
-        <p class="price-note">Launch offer, was $39.99. One-time purchase. Free updates. No subscription.</p>
+        <p class="price-note">One-time purchase. Free updates. No subscription.</p>
 
         <p class="formats">VST3 &nbsp;·&nbsp; Audio Unit &nbsp;·&nbsp; Standalone</p>
       </div>
@@ -992,7 +1008,7 @@ section { position: relative; z-index: 2; }
 
         <a class="btn btn-buy lemonsqueezy-button"
            href="https://jayusounds.lemonsqueezy.com/checkout/buy/b5286d77-e4d2-460e-bf3c-9ecff3fb4917?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
-          Buy Shizen — $29.99
+          $29.99
         </a>
 
         <p class="small muted" style="margin:20px auto 0">
