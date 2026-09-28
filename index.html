@@ -52,6 +52,13 @@
   /* Straight from the plugin's own :root. */
   --paper-base:    #f3ead9;
   --paper-scene:   #f7f2e9;
+  /* The PAGE, lighter than the surfaces that sit on it. They were the same
+     token, so a clip - whose own pond is --paper-scene - had no edge against
+     the page behind it: measured 7.5 luminance apart, which is nothing. At
+     #fdfbf7 it is 15.4, and the clips, the buy card and the demo frame all
+     read as paper laid ON paper rather than a continuous field. Still warm;
+     pure white loses the washi entirely over the large empty stretches. */
+  --paper-page:    #fdfbf7;
   --paper-shadow:  #e7d9c1;
   --paper-fiber:   #d9c6a3;
   --ink:           #332c23;
@@ -106,7 +113,7 @@ body {
      grain map (average 236,236,236), so laid down flat it buries everything
      above under grey - which is exactly what the first pass did. The plugin
      multiplies it from a separate .paper-grain layer, and so does ::before. */
-  background-color: var(--paper-scene);
+  background-color: var(--paper-page);
   background-image:
     radial-gradient(ellipse 30% 38% at 14% 22%, rgba(159,192,209,0.22), transparent 68%),
     radial-gradient(ellipse 26% 34% at 78% 30%, rgba(220,177,172,0.16), transparent 70%),
@@ -959,11 +966,11 @@ section { position: relative; z-index: 2; }
         <p class="muted small" style="margin:0 auto 4px">One-time purchase, free updates</p>
 
         <ul>
-          <li>VST3 on macOS and Windows, Audio Unit on macOS, and a standalone app on both</li>
+          <li>VST3, AU, Standalone</li>
           <li>macOS and Windows, 64-bit</li>
-          <li>30 factory presets to start from</li>
-          <li>100 factory one-shots included</li>
-          <li>Use it in commercial releases, royalty-free</li>
+          <li>30 factory presets</li>
+          <li>100 factory one-shots</li>
+          <li>Royalty-free for commercial use</li>
         </ul>
 
         <a class="btn btn-buy lemonsqueezy-button"
@@ -987,13 +994,13 @@ section { position: relative; z-index: 2; }
           <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-specs-narrow.svg"><img src="assets/type/h2-specs-wide.svg" alt="What you need"></picture></h2>
           <dl class="spec-list">
             <dt>macOS</dt>
-            <dd>Intel or Apple Silicon. macOS 10.13 High Sierra or later on Intel, macOS 11 Big Sur or later on Apple Silicon. Signed and notarised by Apple — it installs without a Gatekeeper warning.</dd>
+            <dd>10.13 or later on Intel, 11 or later on Apple Silicon</dd>
             <dt>Windows</dt>
-            <dd>Windows 10 or later, 64-bit. The installer is code-signed.</dd>
+            <dd>10 or later, 64-bit</dd>
             <dt>Formats</dt>
-            <dd>VST3 on both platforms, Audio Unit on macOS, and a standalone app on both. The installer lets you choose which to install.</dd>
+            <dd>VST3, AU, Standalone</dd>
             <dt>Hosts</dt>
-            <dd>Any VST3 or AU host — FL Studio, Ableton Live, Logic Pro, Bitwig, Reaper, Studio One. Or no host at all: the standalone runs on its own.</dd>
+            <dd>FL Studio, Ableton Live, Logic Pro, Bitwig, Reaper, Studio One</dd>
           </dl>
         </div>
 
