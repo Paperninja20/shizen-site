@@ -63,7 +63,7 @@
      measured an R-B spread of 1.8 against the original sheet's 10.1, which
      is the washi gone. #fffef6 is brighter than that AND warmer at 5.4,
      because the last few points of blue are what the paper loses first. */
-  --paper-page:    #fffef6;
+  --paper-page:    #fffffa;
   --paper-shadow:  #e7d9c1;
   --paper-fiber:   #d9c6a3;
   --ink:           #332c23;
@@ -119,11 +119,18 @@ body {
      above under grey - which is exactly what the first pass did. The plugin
      multiplies it from a separate .paper-grain layer, and so does ::before. */
   background-color: var(--paper-page);
-  background-image:
-    radial-gradient(ellipse 30% 38% at 14% 22%, rgba(159,192,209,0.22), transparent 68%),
-    radial-gradient(ellipse 26% 34% at 78% 30%, rgba(220,177,172,0.16), transparent 70%),
-    radial-gradient(ellipse 28% 36% at 55% 78%, rgba(167,193,157,0.18), transparent 70%),
-    radial-gradient(ellipse 22% 31% at 90% 85%, rgba(195,183,214,0.14), transparent 70%);
+  /* v2026-09-28: no blooms, no grain - the page is a flat ground now.
+
+     The four washes and the multiplied washi tile were what made the page
+     the SAME material as the clips sitting on it, and the tile was also
+     darkening it by about 19 luminance. Flat and lighter takes the
+     separation from 17.8 to 40.2: the clips read as paper objects on a
+     clean page rather than lighter patches of one continuous sheet.
+
+     The washi has not left the design - it is still the clips, the buy
+     card, the demo frame and the plugin itself. It is just no longer the
+     backdrop as well. To put it back, restore the four radial-gradients
+     here and drop the display:none on the grain layer below. */
   background-attachment: fixed;
 }
 
@@ -139,6 +146,7 @@ body::before {
   /* No opacity, matching .paper-grain in the plugin: the tile is pale
      enough (average 236,236,236) that a full multiply is already subtle,
      and dialling it back was this page guessing where the plugin does not. */
+  display: none;              /* see the note on --paper-page */
   mix-blend-mode: multiply;
   pointer-events: none;
   z-index: 1;
