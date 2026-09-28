@@ -618,9 +618,13 @@ section { position: relative; z-index: 2; }
    same text-indent for the same reason. */
 .launch-note {
   font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
-  text-indent: 0.2em;
   color: var(--seal-red); margin: 8px auto 0;
 }
+/* The text-indent belongs to the CENTRED copy only. In the hero the column
+   is left-aligned, so indenting would push the label 0.2em right of the
+   button it sits above - the very misalignment it fixes in the card. */
+.buy-card .launch-note { text-indent: 0.2em; }
+.hero .launch-note { margin: 0 0 10px; }
 .buy-card ul { list-style: none; padding: 0; margin: 26px auto 30px; max-width: 400px; text-align: left; }
 .buy-card li { padding-left: 26px; position: relative; margin-bottom: 9px; font-size: 0.96em; }
 .buy-card li::before { content: "—"; position: absolute; left: 0; color: var(--seal-red); }
@@ -699,6 +703,7 @@ section { position: relative; z-index: 2; }
           for itself.
         </p>
 
+        <p class="launch-note">Launch offer</p>
         <div class="cta-row">
           <!-- The live Lemon Squeezy checkout. `?embed=1`, plus lemon.js at
                the foot of the page, opens it as an overlay rather than
