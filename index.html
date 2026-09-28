@@ -609,7 +609,18 @@ section { position: relative; z-index: 2; }
    original is there only to say what the saving is. */
 .price .was { font-size: 0.42em; color: var(--ink-soft); text-decoration: line-through;
               margin-right: 0.28em; vertical-align: 0.42em; }
-.launch-note { font-size: 0.9rem; color: var(--seal-red); margin: 0 auto 10px; }
+/* Letter-spacing puts a trailing space after the LAST character too, so
+   centred text sits visually left by half of it. A matching text-indent
+   pushes it back - this is why the card's SHIZEN looked off-centre. */
+.buy-card .eyebrow { font-size: 1rem; text-indent: 0.2em; margin-bottom: 6px; }
+/* Under the price, labelling the strikethrough above it. Same caps-and-
+   tracking treatment as the eyebrow so the card keeps one voice, and the
+   same text-indent for the same reason. */
+.launch-note {
+  font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+  text-indent: 0.2em;
+  color: var(--seal-red); margin: 8px auto 0;
+}
 .buy-card ul { list-style: none; padding: 0; margin: 26px auto 30px; max-width: 400px; text-align: left; }
 .buy-card li { padding-left: 26px; position: relative; margin-bottom: 9px; font-size: 0.96em; }
 .buy-card li::before { content: "—"; position: absolute; left: 0; color: var(--seal-red); }
@@ -997,10 +1008,10 @@ section { position: relative; z-index: 2; }
   <div class="wrap">
     <section class="band" id="buy">
       <div class="buy-card">
-        <p class="eyebrow" style="margin-bottom:4px">Shizen</p>
-        <p class="launch-note">Launch offer</p>
+        <p class="eyebrow">Shizen</p>
         <p class="price"><span class="was">$39.99</span>$29.99</p>
-        <p class="muted small" style="margin:0 auto 4px">One-time purchase, free updates</p>
+        <p class="launch-note">Launch offer</p>
+        <p class="muted small" style="margin:6px auto 4px">One-time purchase, free updates</p>
 
         <ul>
           <li>VST3, AU, Standalone</li>
