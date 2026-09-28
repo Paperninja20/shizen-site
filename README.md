@@ -242,7 +242,7 @@ the rest of the page staying omake.
 
 ## Deploying
 
-**Live at https://jayubeats.com/**
+**Live at https://jayusounds.com/**
 
 The apex is a custom domain on GitHub Pages. `site/CNAME` is what sets it,
 and it has to live HERE rather than only in the published repo: publish.sh
