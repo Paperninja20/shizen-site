@@ -23,8 +23,12 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    `?embed=1` plus `lemon.js` is what makes it an overlay rather than a
    navigation; if you ever swap the link, keep that parameter.
 3. ~~**Support email**~~ Done - `prodjayu@gmail.com` in the footer.
-4. **Demo video.** Replace the dashed `.demo-frame` placeholder with the
-   iframe commented directly above it.
+4. ~~**Demo video.**~~ Done - a youtube-nocookie embed of `PQLJ3Vs06Y8`
+   ("Shizen: A Pond That Plays Itself"). `.demo-frame` lost its dashed
+   placeholder edge for the solid hairline the other clips carry, and gained
+   `overflow: hidden` - an iframe paints its own square corners and will not
+   take a radius from its parent. `loading="lazy"` keeps YouTube's player off
+   the wire until someone scrolls to it.
 5. ~~**The five demo tracks.**~~ Done - `assets/audio/demo-1.m4a` through
    `demo-5.m4a`, 2.3MB in total. Every one carries `preload="none"`: five
    audio files fetched before anyone presses anything would dwarf the rest of

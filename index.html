@@ -582,16 +582,51 @@ section { position: relative; z-index: 2; }
 }
 
 /* --- demo --------------------------------------------------------------- */
+/* The walkthrough is in, so this stops being a placeholder: solid hairline,
+   10px corners and the hero's shadow, which is the edge every other moving
+   picture on the page carries (.pond, .mode-media).
+
+   overflow:hidden is not decoration. An iframe paints its own square corners
+   and will not inherit a radius from its parent, so without it the video sits
+   in a rounded frame with four corners poking out of it.
+
+   The grid centring and padding went with the placeholder text: 24px of
+   padding under a child sized 100%/100% would have pushed the video out of
+   the box. */
 .demo-frame {
   aspect-ratio: 16 / 9;
   background: var(--paper-scene);
-  border: 1.5px dashed var(--paper-fiber);
-  border-radius: 4px;
-  display: grid; place-items: center;
-  text-align: center; padding: 24px;
-  color: var(--ink-soft);
+  border: 1.5px solid var(--ink-hairline);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(80,64,44,0.13);
+  overflow: hidden;
 }
-.demo-frame iframe { width: 100%; height: 100%; border: 0; border-radius: 3px; }
+/* The player's own background is BLACK, and it shows as a hairline down each
+   side whenever the box is not exactly 16:9.
+
+   box-sizing is border-box, so aspect-ratio sizes the BORDER box and the
+   1.5px hairline comes off the content box: 997/559.5 = 1.782 against 16:9's
+   1.778. Relatively wider, so the player fits the video to the height and
+   pillars the remainder - a 1px black line inside our own border, on a page
+   where nothing else is darker than 0.8% of the frame.
+
+   Chasing that sub-pixel with a corrected ratio would break again at the next
+   border change, so overscan instead and let the frame's overflow:hidden crop
+   it. Same trick .pond video uses (transform: scale(1.012)) for the capture's
+   window edge, and .mode-media for its dark columns.
+
+   overflow:hidden clips at the PADDING box, which here is the content box, so
+   the crop is 100%+8px against a -4px margin: 4px a side, four times the line
+   and 0.4% of the width. Overscanning also flips the mismatch - the iframe is
+   now a shade NARROWER than 16:9, so the player letterboxes about 0.5px top
+   and bottom instead, which the same 4px swallows. */
+.demo-frame iframe {
+  display: block;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  margin: -4px;
+  border: 0;
+}
 
 /* --- pricing ------------------------------------------------------------ */
 .buy-card {
@@ -978,13 +1013,13 @@ section { position: relative; z-index: 2; }
         <p class="eyebrow">In motion</p>
         <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-demo-narrow.svg"><img src="assets/type/h2-demo-wide.svg" alt="Watch it run."></picture></h2>
       </div>
-      <!-- TODO: drop the walkthrough video in here. For YouTube:
-           <iframe src="https://www.youtube-nocookie.com/embed/VIDEO-ID"
-                   title="Shizen walkthrough" allowfullscreen loading="lazy"></iframe> -->
       <div class="demo-frame">
-        <p class="small" style="margin:0">
-          Demo video goes here — see <code>site/README.md</code>.
-        </p>
+        <iframe src="https://www.youtube-nocookie.com/embed/PQLJ3Vs06Y8"
+                title="Shizen: A Pond That Plays Itself"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
       </div>
     </section>
   </div>
