@@ -19,7 +19,7 @@ Everything below is marked `TODO` in `index.html`. Search for it.
    and all three have to move together, or the overlay opens at a different
    number than the one that was clicked.
 2. ~~**Lemon Squeezy store and variant.**~~ Done - both buttons point at
-   `jayusounds.lemonsqueezy.com/checkout/buy/b5286d77-...?embed=1&media=0`.
+   `jayusounds.lemonsqueezy.com/checkout/buy/c4462671-...?embed=1&media=0`.
    `?embed=1` plus `lemon.js` is what makes it an overlay rather than a
    navigation; if you ever swap the link, keep that parameter.
 3. ~~**Support email**~~ Done - `prodjayu@gmail.com` in the footer.
