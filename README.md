@@ -1,14 +1,89 @@
-# Shizen — landing page
+# jayusounds.com
 
-A single static page. No build step, no dependencies, no framework: open
-`index.html` and what you see is what deploys.
+Static pages. No build step, no dependencies, no framework: open the HTML and
+what you see is what deploys.
 
 ```
 site/
-  index.html        the whole page, styles inline
-  assets/img/       artwork, lifted from the plugin and quantised for the web
-  README.md         this file
+  index.html          the Shizen product page - what jayusounds.com serves
+  shizen/index.html   a redirect stub to the root, so /shizen/ links work
+  _menu/index.html    the channel menu. NOT PUBLISHED - see below
+  assets/img/         artwork, lifted from the plugin and quantised for the web
+  assets/type/        omake headings as SVG outlines (never the font itself)
+  tools/              generators and publish.sh. NOT PUBLISHED
+  README.md           this file
 ```
+
+## Anything starting with `_` is local-only
+
+`publish.sh` rsyncs with `--exclude '_*'`, so a file or folder under `site/`
+whose name begins with an underscore never reaches the public mirror. That
+is a convention, not a special case: it also catches the throwaway
+`_probe.html` harnesses, one of which was committed by accident once and
+would otherwise have shipped.
+
+`_menu/` holds the channel menu - the console-style homepage. It is finished
+and it is not launching for a long while, so it lives there and the Shizen
+page keeps the root. **The split is in the filesystem, not in git**, because
+publish.sh ships the working tree: a branch would only mean maintaining two
+copies of every file and merging them on every edit.
+
+### Launching the menu, when that day comes
+
+1. `_menu/index.html` -> `index.html`, rewriting its `../assets/` back to
+   `assets/`
+2. the Shizen page -> `shizen/index.html`, rewriting `assets/` to
+   `../assets/` and its `og:url` to `.../shizen/`
+3. delete the redirect stub it replaces
+4. repoint the YouTube description and the Instagram bio at `/shizen/`
+
+The menu already links to `/shizen/` root-relative, which is correct both
+while it is parked and after it moves. That is the one path in it that could
+not be relative.
+
+## The dock player
+
+The bottom bar carries a now-playing strip: artwork, title, artist, a
+seekable bar and transport. It is a real player, not a mock-up.
+
+**`TRACKS` at the top of the page script is the swap-in point.** It holds
+five Shizen pond demos today, purely so the thing is testable before any
+beats exist. Each entry is `{title, artist, src, art}` and the player knows
+nothing else about what it is playing, so selling beats here is a matter of
+replacing that array.
+
+Two things in it are deliberate and worth not undoing:
+
+- `preload="none"` on the audio element. Five files fetched before anyone
+  presses anything would dwarf the rest of the page - the same reasoning the
+  Shizen page's own players carry.
+- The seek bar is a `div`, not `<input type="range">`. The range widget
+  cannot be made to match this palette across browsers without more
+  overrides than the bar is worth, so it carries `role="slider"`, the aria
+  value attributes and arrow-key handling instead.
+
+At phone width the artwork, the artist line and the Jayu knob drop out;
+three things cannot share that width without the player becoming a sliver.
+
+## Two pages, and why Shizen moved
+
+Shizen used to BE the site, at the root. `shizen/index.html` was a redirect
+stub, put there so marketing could point at a stable address before a second
+product existed - and its comment said exactly what would happen when one
+did: the root becomes a menu, and every link that said "the root" and meant
+"Shizen" quietly becomes a link to a product grid.
+
+That moment arrived. The stub is gone and the real page lives there now.
+
+**Anything already published that points at the bare domain now lands on the
+menu, not on Shizen.** The trailer description, an Instagram bio and any
+posted link are all in that category. They still work, they just cost a
+click. Editable ones should be repointed at `/shizen/`; the rest resolve fine.
+
+Every asset reference inside `shizen/index.html` is `../assets/...`, relative
+rather than absolute, for the reason the old stub gave: on a custom domain
+the site root is `/`, but served from a GitHub Pages project path it is
+`/shizen-site/`, and an absolute `/assets/` is right in only one of those.
 
 ## Before it goes live
 

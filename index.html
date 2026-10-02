@@ -21,7 +21,7 @@
      way to tell it is stale - which is exactly what happened to og-card.png.
      Bump the -vN when the artwork changes; a new URL is one they have never
      fetched. -->
-<meta property="og:image" content="https://jayusounds.com/assets/img/og-card-v4.png">
+<meta property="og:image" content="https://jayusounds.com/assets/img/og-card-v5.png">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -708,6 +708,33 @@ section { position: relative; z-index: 2; }
 }
 .site-foot a { color: var(--ink-soft); }
 </style>
+
+<!-- Meta Pixel. Base code as Meta supplies it, with the <noscript> moved to
+     the top of <body>
+<noscript><img height="1" width="1" style="display:none" alt=""
+  src="https://www.facebook.com/tr?id=1120773300951142&amp;ev=PageView&amp;noscript=1"></noscript>
+ - an <img> is not valid inside <head>, and browsers
+     only tolerate it there by accident.
+
+     NOT gated behind consent. If that changes, wrap the fbq('init'/'track')
+     pair in the consent callback and leave the loader where it is.
+
+     NOTE: this pixel CANNOT see purchases. Checkout happens in a Lemon
+     Squeezy overlay on their domain, and a pixel cannot read across that
+     boundary. Purchase has to come from Lemon Squeezy's own Meta
+     integration, using this same id. -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1120773300951142');
+fbq('track', 'PageView');
+</script>
 </head>
 
 <body>
@@ -1185,6 +1212,27 @@ section { position: relative; z-index: 2; }
 <!-- Lemon Squeezy overlay checkout. Any link carrying .lemonsqueezy-button
      and ?embed=1 opens in a modal rather than navigating away. -->
 <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+
+<!-- The one purchase-funnel signal this page CAN see.
+     Checkout itself happens in Lemon Squeezy's overlay, on their domain, so
+     Purchase never reaches this pixel - it has to come from their own Meta
+     integration. InitiateCheckout is the last event on our side of that
+     boundary, and it is the one that separates "traffic arrived" from
+     "traffic wanted it".
+
+     Delegated on document rather than bound per button: there are two buy
+     links, and a listener on each is two things to keep in step. -->
+<script>
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest && e.target.closest('.lemonsqueezy-button');
+  if (! a || typeof window.fbq !== 'function') return;
+  window.fbq('track', 'InitiateCheckout', {
+    content_name: 'Shizen',
+    value: 29.99,
+    currency: 'USD'
+  });
+});
+</script>
 
 <script>
   // v2.233.0: the demo players.
