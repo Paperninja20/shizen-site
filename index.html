@@ -696,6 +696,9 @@ section { position: relative; z-index: 2; }
   font-size: 0.93em; line-height: 1.5;
   color: var(--ink-soft);
 }
+/* Two lines under one version need more air between them than 3px, or they
+   read as one paragraph that changed subject mid-sentence. */
+.cl-what + .cl-what { margin-top: 10px; }
 
 /* --- footer ------------------------------------------------------------- */
 .site-foot {
@@ -1123,70 +1126,30 @@ fbq('track', 'PageView');
           <p class="eyebrow">Updates</p>
           <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-updates-narrow.svg"><img src="assets/type/h2-updates-wide.svg" alt="What has changed"></picture></h2>
 
+          <!-- The current build only. The list used to run back to 2.197
+               and had fallen 47 versions behind, which is worse than not
+               having one: a stale changelog says the plugin stopped moving.
+               Kept current, it says the opposite.
+
+               Two lines under one version on purpose: 2.247.0 is the build
+               that ships, and it carries 2.246.0's Windows fix as well as
+               its own. Listing 2.246.0 separately would offer a download
+               that no longer exists. -->
+          <!-- The current build only. The list used to run back to 2.197
+               and had fallen 47 versions behind, which is worse than not
+               having one: a stale changelog says the plugin stopped moving.
+               Kept current, it says the opposite.
+
+               ONE version, two lines. 2.247.0 is the build that ships and it
+               carries 2.246.0's Windows fix as well as its own, so both
+               belong under this heading - a second <li> would print the same
+               version twice and read as two releases. .cl-what is already
+               display:block, so stacking them needs no new CSS. -->
           <ol class="changelog">
             <li>
-              <span class="cl-head"><span class="cl-ver">2.200.5</span><span class="cl-date">8 Sep 2026</span></span>
-              <span class="cl-what">A fish out in the pond keeps its name readable in the palette. The stand-in dims the fish, not the label under it.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.200.4</span><span class="cl-date">8 Sep 2026</span></span>
-              <span class="cl-what">A saved capture opens straight in Finder with the file already selected, so it can go into a track on the next click. Shortcuts opens from a ? beside its heading.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.200.3</span><span class="cl-date">8 Sep 2026</span></span>
-              <span class="cl-what">On Random timing the division reads Minimum, because a note waits for the next line rather than falling on every one. Feel belongs to Tempo-Sync, and clears when a fish is switched to Random.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.200.1</span><span class="cl-date">8 Sep 2026</span></span>
-              <span class="cl-what">The standalone app has a face: a koi on washi paper, drawn from the pond's own artwork.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.200.0</span><span class="cl-date">8 Sep 2026</span></span>
-              <span class="cl-what">Shizen now installs as a standalone app as well as a plugin, so a pond can run without opening a DAW. The installer asks which formats you want.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.199.0</span><span class="cl-date">7 Sep 2026</span></span>
-              <span class="cl-what">Capture. The pond is always recording the last two minutes, so the take you were not recording is still there - keep the last 30 seconds, minute, or two.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.198.9</span><span class="cl-date">7 Sep 2026</span></span>
-              <span class="cl-what">Randomize works on every preset again, not only the four whose sample folder happened to exist. A fish's Level now fades it in the pond alone, leaving the palette legible.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.198.8</span><span class="cl-date">7 Sep 2026</span></span>
-              <span class="cl-what">A sample that will not load now says why - a file the plugin is not permitted to read reads differently from one in an unsupported format.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.198.6</span><span class="cl-date">7 Sep 2026</span></span>
-              <span class="cl-what">A Shortcuts panel in Global settings. Every gesture in the pond is Shift + click, and now it says so.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.198.3</span><span class="cl-date">7 Sep 2026</span></span>
-              <span class="cl-what">Universal on macOS - native on both Apple Silicon and Intel, and visible to hosts running under Rosetta.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.198.0</span><span class="cl-date">6 Sep 2026</span></span>
-              <span class="cl-what">A 75% window option, for screens the full size will not fit.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.197.0</span><span class="cl-date">5 Sep 2026</span></span>
-              <span class="cl-what">Signed and notarised under the Jayu Beats identity. Hosts may need one plugin rescan to pick it up.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.196.0</span><span class="cl-date">5 Sep 2026</span></span>
-              <span class="cl-what">Empty palette slots draw a fish and say what to do with it, and a sample dragged over a slot grows it rather than boxing it.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.195.0</span><span class="cl-date">5 Sep 2026</span></span>
-              <span class="cl-what">A new factory one-shot library, and nine factory presets that all load what they promise.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.194.10</span><span class="cl-date">4 Sep 2026</span></span>
-              <span class="cl-what">Fixed a crash: a reversed note could keep reading a sample buffer after it had been freed. Deleting the plugin mid-load could do the same.</span>
-            </li>
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.191.0</span><span class="cl-date">3 Sep 2026</span></span>
-              <span class="cl-what">A Mute beside the master Volume.</span>
+              <span class="cl-head"><span class="cl-ver">2.247.0</span><span class="cl-date">30 Sep 2026</span></span>
+              <span class="cl-what">Windows: Shizen no longer crashes the host as it opens. It was failing to find a file it ships with, and taking the DAW down with it.</span>
+              <span class="cl-what">Occasional clicks are gone. A fish whose Width sat even slightly off centre could fire a single bad sample on low, near-mono material - loud enough to hear over a mix, and most obvious on bass.</span>
             </li>
           </ol>
         </div>
