@@ -37,7 +37,12 @@
 <script>
   // replace(), not assign() - otherwise Back lands here and bounces forward
   // again, trapping the visitor.
-  location.replace('../' + location.hash);
+  // search comes too, not just hash: marketing links point HERE by design,
+  // and an ad link carries ?src=ig, which is the only thing telling Lemon
+  // Squeezy the sale came from the ads. Dropping it loses the attribution
+  // silently - the page still loads, it just forgets where the visitor
+  // came from.
+  location.replace('../' + location.search + location.hash);
 </script>
 
 <style>

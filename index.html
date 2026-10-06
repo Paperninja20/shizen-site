@@ -37,7 +37,7 @@
    read as one thing.
 
    The typeface is the plugin's own "omake" - but as OUTLINES, never as a
-   webfont. Its licence grants commercial USE freely and separately forbids
+   webfont. Its license grants commercial USE freely and separately forbids
    二次配布, redistribution of the font DATA; @font-face is the second thing,
    since it sends omakebold.woff2 to every visitor however the page is paid
    for. Text converted to paths is derived artwork rather than font data - the
@@ -700,6 +700,60 @@ section { position: relative; z-index: 2; }
    read as one paragraph that changed subject mid-sentence. */
 .cl-what + .cl-what { margin-top: 10px; }
 
+/* --- contact ------------------------------------------------------------ */
+.contact-line { max-width: 42rem; margin: 0; }
+.contact-mail {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 1.12rem;
+  color: var(--ink);
+}
+
+/* --- mailing list ------------------------------------------------------- */
+/* The form stays `hidden` in the markup and is un-hidden by script only when
+   an endpoint is configured. A form that silently discards addresses is
+   worse than no form at all. */
+.signup { margin: 26px 0 0; max-width: 34rem; }
+.signup-label {
+  display: block;
+  font-size: 0.95rem; line-height: 1.5;
+  color: var(--ink-soft);
+  margin-bottom: 9px;
+}
+.signup-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.signup-input {
+  flex: 1 1 15rem; min-width: 0;
+  font: inherit;            /* inputs inherit no face: the UA gives them Arial */
+  font-size: 1rem;
+  padding: 14px 16px;
+  color: var(--ink);
+  background: var(--paper-scene);
+  border: 1.5px solid var(--paper-fiber);
+  border-radius: 3px;
+}
+.signup-input::placeholder { color: var(--ink-soft); opacity: 0.55; }
+.signup-input:focus-visible { outline: 2px solid var(--seal-red); outline-offset: 1px; }
+/* Quieter than .btn-buy deliberately: this sits a few lines under the real
+   purchase and must not compete with it. Ink rather than seal red. */
+.signup-btn {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  padding: 14px 24px;
+  color: #fdf8ef;
+  background: var(--ink-soft);
+  box-shadow: 0 3px 0 rgba(51,44,35,0.45);
+}
+.signup-btn:hover  { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(51,44,35,0.45); }
+.signup-btn:active { transform: translateY(1px);  box-shadow: 0 1px 0 rgba(51,44,35,0.45); }
+.signup-note { margin: 10px 0 0; font-size: 0.86rem; color: var(--ink-soft); opacity: 0.8; }
+/* On a phone the two would sit side by side and the field would shrink to a
+   sliver rather than wrap - flex prefers shrinking an item with min-width 0
+   over breaking the line. Stacking makes the button a full-width tap target. */
+@media (max-width: 480px) {
+  .signup-row { flex-direction: column; align-items: stretch; }
+  .signup-btn { width: 100%; }
+}
+
 /* --- footer ------------------------------------------------------------- */
 .site-foot {
   position: relative; z-index: 2;
@@ -710,6 +764,22 @@ section { position: relative; z-index: 2; }
   font-size: 0.86rem; color: var(--ink-soft);
 }
 .site-foot a { color: var(--ink-soft); }
+.foot-left { display: inline-flex; align-items: center; gap: 10px; }
+/* Sized in em so they track the footer's own type rather than needing a
+   breakpoint of their own. */
+.foot-social {
+  display: inline-grid; place-items: center;
+  width: 1.9em; height: 1.9em;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  transition: color 130ms ease, background 130ms ease;
+}
+.foot-social:hover, .foot-social:focus-visible {
+  color: #b1543c;
+  background: rgba(177,84,60,0.09);
+  outline: none;
+}
+.foot-social svg { width: 1.05em; height: 1.05em; display: block; }
 </style>
 
 <!-- Meta Pixel. Base code as Meta supplies it, with the <noscript> moved to
@@ -1088,7 +1158,6 @@ fbq('track', 'PageView');
           <li>macOS and Windows, 64-bit</li>
           <li>30 factory presets</li>
           <li>100 factory one-shots</li>
-          <li>Royalty-free for commercial use</li>
         </ul>
 
         <a class="btn btn-buy lemonsqueezy-button"
@@ -1131,38 +1200,75 @@ fbq('track', 'PageView');
                having one: a stale changelog says the plugin stopped moving.
                Kept current, it says the opposite.
 
-               Two lines under one version on purpose: 2.247.0 is the build
-               that ships, and it carries 2.246.0's Windows fix as well as
-               its own. Listing 2.246.0 separately would offer a download
-               that no longer exists. -->
-          <!-- The current build only. The list used to run back to 2.197
-               and had fallen 47 versions behind, which is worse than not
-               having one: a stale changelog says the plugin stopped moving.
-               Kept current, it says the opposite.
-
-               ONE version, two lines. 2.247.0 is the build that ships and it
-               carries 2.246.0's Windows fix as well as its own, so both
-               belong under this heading - a second <li> would print the same
-               version twice and read as two releases. .cl-what is already
-               display:block, so stacking them needs no new CSS. -->
+               At launch there is nothing to list changes AGAINST. The Windows
+               crash and the width click were both fixed before anyone could
+               download the plugin, so describing them here would advertise
+               faults no buyer ever met - and a first release whose only note
+               is two bug fixes reads as one that shipped broken. This names
+               the release instead; real entries begin with the first build
+               after launch. -->
           <ol class="changelog">
             <li>
               <span class="cl-head"><span class="cl-ver">2.247.0</span><span class="cl-date">30 Sep 2026</span></span>
-              <span class="cl-what">Windows: Shizen no longer crashes the host as it opens. It was failing to find a file it ships with, and taking the DAW down with it.</span>
-              <span class="cl-what">Occasional clicks are gone. A fish whose Width sat even slightly off centre could fire a single bad sample on low, near-mono material - loud enough to hear over a mix, and most obvious on bass.</span>
+              <span class="cl-what">Launch!!!</span>
             </li>
           </ol>
         </div>
       </div>
     </section>
   </div>
+
+  <!-- ================= contact ================= -->
+  <div class="wrap">
+    <section class="band" id="contact">
+      <p class="eyebrow">Contact</p>
+      <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-contact-narrow.svg"><img src="assets/type/h2-contact-wide.svg" alt="Say hello"></picture></h2>
+      <p class="contact-line">
+        Questions, license trouble, or just want to show me what you made with it:
+        <a class="contact-mail" href="mailto:prodjayu@gmail.com">prodjayu@gmail.com</a>
+      </p>
+
+      <!-- There is no trial build, so a first visit often ends in "later" -
+           and later needs somewhere to land, or the visitor is gone for
+           good. Hidden until an endpoint is configured; see the foot of the
+           page. -->
+      <form class="signup" id="signup" method="post" target="_blank" rel="noopener" hidden>
+        <label class="signup-label" for="signup-email">
+          Or get an email when Shizen updates &mdash; new fish, new effects, nothing else.
+        </label>
+        <div class="signup-row">
+          <input class="signup-input" id="signup-email" type="email" name="email"
+                 placeholder="you@example.com" autocomplete="email" required>
+          <button class="btn signup-btn" type="submit">Keep me posted</button>
+        </div>
+        <p class="signup-note">No spam, and one click to leave.</p>
+      </form>
+    </section>
+  </div>
 </main>
 
 <div class="wrap">
   <footer class="site-foot">
-    <span>© <span id="year">2026</span> Jayu Sounds</span>
+    <span class="foot-left">
+      © <span id="year">2026</span> Jayu Sounds
+      <a class="foot-social" href="https://www.instagram.com/prodjayu/"
+         target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
+          <circle cx="12" cy="12" r="4.1"></circle>
+          <circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </a>
+      <a class="foot-social" href="https://www.youtube.com/@jayusounds"
+         target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23.5 12 31 31 0 0 0 23 7.5zM9.8 15.3V8.7l5.7 3.3z"></path>
+        </svg>
+      </a>
+    </span>
     <span>
-      <a href="mailto:prodjayu@gmail.com">Support</a> ·
+      <a href="#contact">Contact</a> ·
       <a href="#buy">Buy</a>
     </span>
   </footer>
@@ -1195,6 +1301,67 @@ document.addEventListener('click', function (e) {
     currency: 'USD'
   });
 });
+</script>
+
+<!-- Which channel the visit came from, carried through to the one place a
+     purchase is actually visible.
+
+     The pixel cannot see a purchase: checkout happens in Lemon Squeezy's
+     overlay, on their origin. What DOES survive that boundary is the
+     discount code on the order, so an ad link carrying ?src=ig swaps the
+     public LAUNCH10 for an ads-only code of the same value. Every order in
+     Lemon Squeezy bearing REELS10 came from the ads, and the buyer types
+     nothing.
+
+     Add a row to CODES per channel; anything not listed keeps LAUNCH10. -->
+<script>
+(function adSource() {
+  var CODES = { ig: 'REELS10' };        /* ?src= value -> LS discount code */
+  var KEY = 'shizen-src';
+
+  var src = null;
+  try {
+    src = new URLSearchParams(location.search).get('src');
+    /* Held for the session: they may reload, or wander off and come back to
+       the tab before buying, and the code has to still be the ad's. */
+    if (src && CODES[src]) sessionStorage.setItem(KEY, src);
+    else src = sessionStorage.getItem(KEY);
+  } catch (e) { /* private mode - fall through to the public code */ }
+
+  var code = src && CODES[src];
+  if (! code) return;
+
+  [].forEach.call(document.querySelectorAll('.lemonsqueezy-button'), function (a) {
+    /* The href is written percent-encoded; a browser may hand it back
+       either way, so match both spellings of the brackets. */
+    a.href = a.href.replace(
+      /([?&]checkout(?:%5B|\[)discount_code(?:%5D|\])=)[^&]*/,
+      '$1' + code);
+  });
+})();
+</script>
+
+<!-- Mailing list endpoint. Paste the form action from whichever provider you
+     use and the form in #contact un-hides itself. Leave it empty and the
+     form never appears, so the page cannot take an address it has nowhere
+     to put.
+
+       Buttondown   https://buttondown.email/api/emails/embed-subscribe/USERNAME
+       ConvertKit   https://app.convertkit.com/forms/FORMID/subscriptions
+       Mailchimp    https://LIST.us21.list-manage.com/subscribe/post?u=...&id=...
+
+     It posts straight to the provider rather than through fetch: no CORS to
+     satisfy, and their page owns the confirmation and the double opt-in.
+     target="_blank" leaves this page open behind it. -->
+<script>
+(function newsletter() {
+  var ENDPOINT = '';                    /* <- paste it here */
+
+  var form = document.getElementById('signup');
+  if (! form || ! ENDPOINT) return;
+  form.action = ENDPOINT;
+  form.hidden = false;
+})();
 </script>
 
 <script>

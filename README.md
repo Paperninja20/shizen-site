@@ -192,7 +192,7 @@ Everything below is marked `TODO` in `index.html`. Search for it.
 7. ~~**Open Graph image.**~~ Done - `assets/img/og-card.png`, 1200×630, is
    what a pasted link renders as in Discord, X or iMessage. Composed from the
    site's own artwork and the omake wordmark outlines, so it needs no font and
-   stays licence-clean.
+   stays license-clean.
 
    To change it: edit `tools/og-card.html`, then
 
@@ -240,7 +240,7 @@ integration is two things and nothing else:
 That opens the checkout as an overlay on top of the page instead of
 navigating away. Lemon Squeezy is a Merchant of Record, which is the reason
 to use them: they take on the VAT and sales-tax liability, host the download
-and issue licence keys. The trade is that the card form has to be theirs —
+and issue license keys. The trade is that the card form has to be theirs —
 you cannot collect card details in your own markup.
 
 Because the whole integration is one `<a>` tag, moving to Paddle (the
@@ -252,7 +252,7 @@ the page's design depends on the processor.
 The page is set in the plugin's own **omake** by rttiipp — but as **outlines**,
 never as a webfont.
 
-That licence grants commercial use freely, and *separately* forbids
+That license grants commercial use freely, and *separately* forbids
 `フォントデータの複製・改変・改造・二次配布・二次販売` — copying, modifying and
 redistributing the font **data**. Those are two different permissions, and a
 webfont runs into the second one: `@font-face` sends `omakebold.woff2` to
@@ -262,14 +262,14 @@ hit exactly the same prohibition.
 
 Text converted to paths is derived **artwork**, not font data — the same
 footing any logo drawn in a licensed face stands on, and squarely the "use"
-the licence does grant. So the wordmark and every `h1`/`h2` are genuine
+the license does grant. So the wordmark and every `h1`/`h2` are genuine
 omake, and no font file is served.
 
 Three things fall out of it:
 
 - **Cheaper than the font.** 16 files, ~185 KB total, against 379 KB for the
   unsubsetted woff2 — and only the headings actually on screen are fetched.
-  (Unsubsetted, because the same licence forbids `改変` and a subset is a
+  (Unsubsetted, because the same license forbids `改変` and a subset is a
   modified font. That reasoning is already in the plugin's own CSS.)
 - **The cmap stops mattering.** omake is missing `—`, `·` and `©` of the
   characters this page uses. Outlines do not consult a cmap, and everything
@@ -314,7 +314,7 @@ screen readers actually read.
 
 ### One clause worth remembering
 
-The same licence forbids `商標登録` — trademark registration of works made
+The same license forbids `商標登録` — trademark registration of works made
 using the font. If the omake wordmark ever becomes the brand, it cannot be
 registered. A wordmark drawn in something you own would avoid that, even with
 the rest of the page staying omake.
@@ -348,7 +348,7 @@ a plan to host one static page. So only `site/` is mirrored, and the source
 stays private.
 
 `site/tools` is deliberately NOT mirrored. `make-type.py` reads the licensed
-omake font out of the plugin tree, and that licence forbids redistributing
+omake font out of the plugin tree, and that license forbids redistributing
 the font data; publishing a script that points straight at it invites exactly
 that. Regenerate type in this repo, then publish.
 
