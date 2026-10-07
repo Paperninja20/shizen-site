@@ -31,6 +31,19 @@
 -->
 
 <link rel="canonical" href="../">
+
+<!-- The share card has to live HERE as well as on the page this forwards to.
+     Scrapers do not follow a meta refresh or a location.replace - they read
+     the markup they are served - so without these, every link that says
+     jayusounds.com/shizen (the bio, the YouTube description, the captions)
+     shares as a bare URL with no image. og:url names this address rather
+     than the root because this is the one marketing hands out. -->
+<meta property="og:title" content="Shizen — a generative sampler you paint">
+<meta property="og:description" content="Drop one-shots onto fish, let them swim, and they play themselves — always in your key.">
+<meta property="og:type" content="product">
+<meta property="og:url" content="https://jayusounds.com/shizen/">
+<meta property="og:image" content="https://jayusounds.com/assets/img/og-card-v5.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta http-equiv="refresh" content="0; url=../">
 <meta name="robots" content="noindex, follow">
 
