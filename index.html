@@ -708,6 +708,12 @@ section { position: relative; z-index: 2; }
   font-size: 1.12rem;
   color: var(--ink);
 }
+/* The address carries extra size where it sits on its own line. In the
+   refunds sentence it is mid-paragraph, where that size reads as a mistake. */
+.sub-h { margin-top: 30px; }
+.refund-line .contact-mail { font-size: inherit; margin-top: 0; }
+/* .contact-line has no margin - it is normally the only one in its block. */
+.refund-line + .refund-line { margin-top: 0.7em; }
 
 /* --- mailing list ------------------------------------------------------- */
 /* The form stays `hidden` in the markup and is un-hidden by script only when
@@ -1164,10 +1170,6 @@ fbq('track', 'PageView');
            href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
           Buy $29.99
         </a>
-
-        <p class="small muted" style="margin:20px auto 0">
-          Secure checkout by Lemon Squeezy. VAT and sales tax handled at checkout.
-        </p>
       </div>
     </section>
   </div>
@@ -1226,6 +1228,20 @@ fbq('track', 'PageView');
       <p class="contact-line">
         Questions, license trouble, or just want to show me what you made with it:
         <a class="contact-mail" href="mailto:prodjayu@gmail.com">prodjayu@gmail.com</a>
+      </p>
+
+      <!-- A subsection rather than its own band: someone reading this is
+           already deciding whether to email, and the address is two lines up. -->
+      <h3 class="sub-h">Refunds</h3>
+      <p class="contact-line refund-line">
+        If Shizen won&rsquo;t run properly on a <a href="#specs">supported system</a>
+        and we can&rsquo;t fix it between us, I&rsquo;ll refund you. Any other
+        request, I&rsquo;ll review personally.
+      </p>
+      <p class="contact-line refund-line">
+        Either way, email me at
+        <a class="contact-mail" href="mailto:prodjayu@gmail.com">prodjayu@gmail.com</a>
+        with your order number and what went wrong.
       </p>
 
       <!-- There is no trial build, so a first visit often ends in "later" -
