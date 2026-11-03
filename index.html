@@ -844,7 +844,6 @@ fbq('track', 'PageView');
           for itself.
         </p>
 
-        <p class="launch-note">Launch offer</p>
         <div class="cta-row">
           <!-- The live Lemon Squeezy checkout. `?embed=1`, plus lemon.js at
                the foot of the page, opens it as an overlay rather than
@@ -853,8 +852,8 @@ fbq('track', 'PageView');
                button - all three have to match the variant, or the overlay
                opens at a different number than the one that was clicked. -->
           <a class="btn btn-buy lemonsqueezy-button"
-             href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
-            Buy <span class="was">$39.99</span>$29.99
+             href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0">
+            Buy $39.99
           </a>
           <a class="btn btn-ghost" href="#hear">Hear it first</a>
         </div>
@@ -1155,8 +1154,7 @@ fbq('track', 'PageView');
     <section class="band" id="buy">
       <div class="buy-card">
         <p class="eyebrow">Shizen</p>
-        <p class="price"><span class="was">$39.99</span>$29.99</p>
-        <p class="launch-note">Launch offer</p>
+        <p class="price">$39.99</p>
         <p class="muted small" style="margin:6px auto 4px">One-time purchase, free updates</p>
 
         <ul>
@@ -1167,8 +1165,8 @@ fbq('track', 'PageView');
         </ul>
 
         <a class="btn btn-buy lemonsqueezy-button"
-           href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0&checkout%5Bdiscount_code%5D=LAUNCH10">
-          Buy $29.99
+           href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0">
+          Buy $39.99
         </a>
       </div>
     </section>
@@ -1313,7 +1311,7 @@ document.addEventListener('click', function (e) {
   if (! a || typeof window.fbq !== 'function') return;
   window.fbq('track', 'InitiateCheckout', {
     content_name: 'Shizen',
-    value: 29.99,
+    value: 39.99,
     currency: 'USD'
   });
 });
@@ -1325,11 +1323,12 @@ document.addEventListener('click', function (e) {
      The pixel cannot see a purchase: checkout happens in Lemon Squeezy's
      overlay, on their origin. What DOES survive that boundary is the
      discount code on the order, so an ad link carrying ?src=ig swaps the
-     public LAUNCH10 for an ads-only code of the same value. Every order in
+     buy link's code - or adds one, now that the launch offer is over and
+     the links carry none - for an ads-only code. Every order in
      Lemon Squeezy bearing REELS10 came from the ads, and the buyer types
      nothing.
 
-     Add a row to CODES per channel; anything not listed keeps LAUNCH10. -->
+     Add a row to CODES per channel; anything not listed pays full price. -->
 <script>
 (function adSource() {
   var CODES = { ig: 'REELS10' };        /* ?src= value -> LS discount code */
@@ -1349,10 +1348,16 @@ document.addEventListener('click', function (e) {
 
   [].forEach.call(document.querySelectorAll('.lemonsqueezy-button'), function (a) {
     /* The href is written percent-encoded; a browser may hand it back
-       either way, so match both spellings of the brackets. */
-    a.href = a.href.replace(
-      /([?&]checkout(?:%5B|\[)discount_code(?:%5D|\])=)[^&]*/,
-      '$1' + code);
+       either way, so match both spellings of the brackets.
+
+       v2.249.0: APPEND when there is no code to replace. With the launch
+       offer over the buy links carry no discount at all, and a replace that
+       matches nothing fails silently - the swap would look wired up and do
+       nothing, which is the same trap as a code that does not exist. */
+    var re = /([?&]checkout(?:%5B|\[)discount_code(?:%5D|\])=)[^&]*/;
+    a.href = re.test(a.href)
+      ? a.href.replace(re, '$1' + code)
+      : a.href + '&checkout%5Bdiscount_code%5D=' + code;
   });
 })();
 </script>
