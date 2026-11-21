@@ -3,789 +3,737 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shizen — a generative sampler you paint</title>
-<meta name="description" content="Shizen is a generative sampler for macOS and Windows. Drop one-shots onto fish, let them swim, and they play themselves — always in your key. VST3, AU and standalone.">
+<title>Jayu Sounds</title>
+<meta name="description" content="Audio plugins by Jayu Sounds: Shizen, a generative sampler, and LeDELAY, a multi-tap delay that dribbles. Pick a channel.">
 
-<meta property="og:title" content="Shizen — a generative sampler you paint">
-<meta property="og:description" content="Drop one-shots onto fish, let them swim, and they play themselves — always in your key.">
-<meta property="og:type" content="product">
+<link rel="canonical" href="https://jayusounds.com/">
+<meta property="og:type" content="website">
 <meta property="og:url" content="https://jayusounds.com/">
-<!-- Absolute, because link unfurlers do not resolve a relative one. The host
-     is the custom domain as of 27 Sep 2026 (jayusounds.com, after the
-     rename from jayubeats.com); it was the github.io project
-     path before that, and both of these had to move together.
-
-     VERSIONED FILENAME, on purpose. Discord (and X, and iMessage) cache the
-     card on their own proxies keyed by this URL, for days. Replacing the
-     bytes at a fixed name leaves everyone looking at the old picture with no
-     way to tell it is stale - which is exactly what happened to og-card.png.
-     Bump the -vN when the artwork changes; a new URL is one they have never
-     fetched. -->
+<meta property="og:title" content="Jayu Sounds">
+<meta property="og:description" content="Audio plugins by Jayu Sounds: Shizen, LeDELAY, and more to come. Pick a channel.">
 <meta property="og:image" content="https://jayusounds.com/assets/img/og-card-v5.png">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baumans&display=swap" rel="stylesheet">
 
 <style>
 /* ===========================================================================
-   Shizen — landing page
+   The channel menu.
 
-   The palette, the paper and the artwork are lifted straight from the
-   plugin (plugins/Nagare/Source/ui/public), so the page and the product
-   read as one thing.
+   The reference is the Wii's system menu, and the parts worth copying are
+   structural rather than decorative: a cool, near-neutral shell that stays
+   out of the way, and inside it a grid of tiles where each one is allowed to
+   look like nothing else on the page. That is exactly the shape this site
+   needs - the shell belongs to the label, and each product brings its own
+   world into its own tile.
 
-   The typeface is the plugin's own "omake" - but as OUTLINES, never as a
-   webfont. Its license grants commercial USE freely and separately forbids
-   二次配布, redistribution of the font DATA; @font-face is the second thing,
-   since it sends omakebold.woff2 to every visitor however the page is paid
-   for. Text converted to paths is derived artwork rather than font data - the
-   same footing any logo drawn in a licensed face stands on - so the headings
-   are genuine omake and no font file is served.
+   So the chrome here is deliberately NOT washi. Shizen's tile is washi,
+   because Shizen is. A sample pack's tile will be whatever that pack is.
+   Making the shell warm too would flatten the one distinction the layout
+   exists to draw.
 
-   site/tools/make-type.py generates them. Everything still set as live text
-   is Zen Kurenaido (SIL OFL, Google Fonts).
-   =========================================================================== */
+   Type is Baumans throughout - see --font-ui. One face, one request, and
+   one weight, which is all Baumans ships.
+   ======================================================================== */
 
 :root {
-  /* Straight from the plugin's own :root. */
-  --paper-base:    #f3ead9;
-  --paper-scene:   #f7f2e9;
-  /* The PAGE, lighter than the surfaces that sit on it. They were the same
-     token, so a clip - whose own pond is --paper-scene - had no edge against
-     the page behind it: measured 7.5 luminance apart, which is nothing. At
-     #fffef6 it is 17.3, and the clips, the buy card and the demo frame all
-     read as paper laid ON paper rather than a continuous field.
+  /* Sampled off a screenshot of the real menu rather than guessed:
+       ground  #e6e6e6   neutral grey, NOT blue-tinted
+       dock    #d2d3da   darker and slightly cool
+       line    (78,182,217) on the divider and the button rings
+       tile    pure white inside a neutral grey hairline, (183,183,183)
+     The ground being neutral is the biggest single correction - the old
+     #eceff1 was reading cold and washed next to it. */
+  /* The pinstripe LIFTS the average: one 1px line of --shell-line every 3px
+     over --shell renders as (line + 2*shell)/3. Setting --shell to the
+     reference's #e6e6e6 therefore measured #e9e9e9 on screen. These two are
+     picked so the rendered average lands on #e6e6e6 instead. */
+  --shell:       #e3e3e3;
+  --shell-line:  #ededed;
+  --dock:        #d2d3da;
 
-     Blue is held back deliberately. Raising all three channels together
-     reaches the same brightness but lands on neutral grey - #fffdfa
-     measured an R-B spread of 1.8 against the original sheet's 10.1, which
-     is the washi gone. #fffef6 is brighter than that AND warmer at 5.4,
-     because the last few points of blue are what the paper loses first. */
-  --paper-page:    #fffff6;
-  --paper-shadow:  #e7d9c1;
-  --paper-fiber:   #d9c6a3;
-  --ink:           #332c23;
-  --ink-soft:      #4f4536;
-  --wash-green:    #a7c19d;
-  --wash-pink:     #dcb1ac;
-  --wash-lavender: #c3b7d6;
-  --seal-red:      #b1543c;
-  --gold-thread:   #c8a05e;
-  /* The clips are the only photographic things on the page, and they need
-     an edge to sit against the washi. Solid --ink is too hard a stroke at
-     this weight, so it is the same brown held back to a hairline. */
-  --ink-hairline:  rgba(51, 44, 35, 0.22);
+  --tile:        #ffffff;
+  --tile-edge:   #b7b7b7;         /* the hairline the real channels carry */
+  --glow:        140, 205, 232;   /* the cyan bloom, as rgb parts */
 
-  /* One live face, not two. The display HEADINGS are omake outlines now
-     (site/tools/make-type.py), so the other face was left setting only the small bits -
-     h3, the price, the FAQ summaries - and a third face on the page for
-     that was one more than it needed. Zen Kurenaido carries them instead:
-     it is the closer match to omake, and dropping the other saves a family
-     off the font request. */
-  --font-display: 'Zen Kurenaido', 'Avenir Next', system-ui, sans-serif;
-  --font-body:    'Zen Kurenaido', 'Avenir Next', system-ui, sans-serif;
+  --wii-blue:    #3aabd2;
+  --wii-line:    #4eb6d9;
 
-  --measure: 62ch;
-  --gutter: clamp(20px, 5vw, 64px);
+  --ink:         #5a5f63;
+  --ink-soft:    #8e9398;
+
+  /* ONE face for the whole shell: wordmark, clock, tile names, knobs, the
+     lot. Comfortaa is rounded geometric under the OFL, so it can be served,
+     and weights are numbers rather than separate files - which is what made
+     "bold again" a one-character change instead of another font hunt.
+
+     Segoe UI and Zen Kurenaido are both gone from this page. Segoe only ever
+     reached Windows visitors anyway, since its license bars serving it, so
+     it was quietly giving two audiences two different pages. */
+  --font-ui:     'Baumans', 'Avenir Next', 'Century Gothic', system-ui, sans-serif;
+  --font-mark:   var(--font-ui);
+
+
+  --dock-h:      230px;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+* { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+html, body { height: 100%; }
 
+/* The set. Near-black rather than black: a CRT bezel is moulded plastic and
+   catches a little light, and true black makes the screen's own dark corners
+   disappear into it. */
 body {
   margin: 0;
-  font-family: var(--font-body);
-  font-size: clamp(16px, 1.05vw + 13px, 19px);
-  line-height: 1.72;
+  background: #0d0e10;
+  font-family: var(--font-ui);
   color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-
-  /* The pond's own sheet, recipe for recipe (.pond-canvas in the plugin):
-     --paper-scene under four soft watercolour blooms - blue, pink, green,
-     lavender - with the paper grain multiplied over the top by ::before.
-
-     Two changes, both so it behaves as a PAGE rather than a fixed 1070x580
-     canvas. The blooms are sized in percentages rather than the plugin's
-     pixels, so they hold their proportions at any width; and the whole thing
-     is `fixed`, so a long page scrolls over one continuous sheet instead of
-     repeating the wash every screenful.
-
-     washi-tile.png is NOT among these layers. It is an opaque neutral grey
-     grain map (average 236,236,236), so laid down flat it buries everything
-     above under grey - which is exactly what the first pass did. The plugin
-     multiplies it from a separate .paper-grain layer, and so does ::before. */
-  background-color: var(--paper-page);
-  background-image:
-    radial-gradient(ellipse 30% 38% at 14% 22%, rgba(159,192,209,0.22), transparent 68%),
-    radial-gradient(ellipse 26% 34% at 78% 30%, rgba(220,177,172,0.16), transparent 70%),
-    radial-gradient(ellipse 28% 36% at 55% 78%, rgba(167,193,157,0.18), transparent 70%),
-    radial-gradient(ellipse 22% 31% at 90% 85%, rgba(195,183,214,0.14), transparent 70%);
-  background-attachment: fixed;
+  min-height: 100%;
 }
 
-/* The paper grain, multiplied over the cream so the hue survives and only
-   the fibre darkens. Pinned, so the grain sits still while the page moves
-   under it. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url("assets/img/washi-tile.png");
-  background-size: 512px 512px;
-  /* No opacity, matching .paper-grain in the plugin: the tile is pale
-     enough (average 236,236,236) that a full multiply is already subtle,
-     and dialling it back was this page guessing where the plugin does not. */
-  /* v2026-09-28: HALF strength.
-
-     A full multiply of the tile (average 236,236,236) darkens the page by
-     about 19 luminance, which is why raising the base colour kept barely
-     moving it - the grain was undoing it. At 0.50 the page sits at 242
-     instead of 232 and the separation from the clips goes 17.7 -> 27.6,
-     while the measured texture is all but unchanged (4.37 against 4.58).
-     The grain that is left is doing the work; the rest was only dimming. */
-  opacity: 0.50;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.wrap { width: min(1120px, 100%); margin-inline: auto; padding-inline: var(--gutter); }
-
-h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.24; margin: 0 0 0.5em; }
-
-/* Headings are omake outlines - see site/tools/make-type.py. The SVG carries
-   its own width/height, which IS the design size; max-width only bites when
-   the column is narrower than that. */
-h1 img, h2 img, .wordmark img { display: block; max-width: 100%; height: auto; }
-.wordmark { align-items: center; }
-.wordmark img { margin-bottom: -2px; }
-h1 { font-size: clamp(2.4rem, 6vw, 4.1rem); letter-spacing: -0.01em; }
-h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
-h3 { font-size: 1.16rem; margin-bottom: 0.35em; }
-p  { margin: 0 0 1.1em; max-width: var(--measure); }
-a  { color: var(--seal-red); }
-
-.lede { font-size: 1.16em; color: var(--ink-soft); }
-.muted { color: var(--ink-soft); }
-.small { font-size: 0.86em; line-height: 1.6; }
-
-/* --- header ------------------------------------------------------------- */
-.site-head {
-  position: relative; z-index: 3;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 24px;
-  padding-block: 22px;
-}
-.wordmark {
-  font-family: var(--font-display);
-  font-size: 1.5rem; font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--ink); text-decoration: none;
-  display: flex; align-items: baseline; gap: 10px;
-}
-.wordmark small {
-  font-family: var(--font-body);
-  font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.site-nav { display: flex; gap: clamp(14px, 2.4vw, 30px); align-items: center; }
-.site-nav a {
-  color: var(--ink-soft); text-decoration: none; font-size: 0.92rem;
-  border-bottom: 1.5px solid transparent; padding-bottom: 2px;
-}
-.site-nav a:hover { color: var(--ink); border-bottom-color: var(--seal-red); }
-@media (max-width: 620px) { .site-nav .hide-sm { display: none; } }
-
-/* --- buttons ------------------------------------------------------------ */
-.btn {
-  display: inline-block;
-  font-family: var(--font-body);
-  font-size: 1.02rem; line-height: 1;
-  padding: 16px 30px;
-  border-radius: 3px;
-  text-decoration: none;
-  border: 1.5px solid transparent;
-  cursor: pointer;
-  transition: transform 130ms ease, box-shadow 130ms ease, background-color 130ms ease;
-}
-.btn-buy {
-  background: var(--seal-red); color: #fdf8ef;
-  box-shadow: 0 3px 0 rgba(120,52,36,0.55);
-  /* The price IS the label now, so it carries the weight the words used to.
-     Bigger type, more air, and the display face rather than the body one -
-     at this size the body face reads thin against the seal red. */
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  padding: 20px 42px;
-}
-/* The old price, struck, sitting inside the button ahead of the new one.
-   Softened against the red rather than a flat grey, so it reads as the same
-   ink at lower weight instead of a different element. */
-.btn-buy .was {
-  font-size: 0.62em;
-  opacity: 0.62;
-  text-decoration: line-through;
-  margin-right: 0.5em;
-  font-weight: 400;
-}
-.btn-buy:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(120,52,36,0.55); }
-.btn-buy:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(120,52,36,0.55); }
-/* Matched to .btn-buy's HEIGHT, not its type size. The two sit on one row,
-   and 66 next to 50 reads as a mistake rather than as hierarchy - which
-   the fill and the type size already carry on their own. */
-.btn-ghost { border-color: var(--paper-fiber); color: var(--ink); background: transparent;
-             padding: 24px 30px; }
-.btn-ghost:hover { border-color: var(--ink-soft); }
-@media (prefers-reduced-motion: reduce) { .btn:hover, .btn:active { transform: none; } }
-
-/* --- hero --------------------------------------------------------------- */
-.hero {
-  position: relative; z-index: 2;
-  display: grid; gap: clamp(28px, 4vw, 48px);
-  grid-template-columns: 1fr;
-  padding-block: clamp(28px, 6vw, 68px) clamp(28px, 4.5vw, 56px);
-  align-items: center;
-}
-/* v2.237.1: the clip is the hero, so give it room. Widening the row evenly
-   would drag the copy left of the logo and every heading below it, so the
-   row keeps the page's left edge and grows rightward instead: the clip
-   bleeds toward the margin, the copy stays on the grid. */
-@media (min-width: 900px) {
-  .wrap.hero-wrap {
-    width: auto;
-    margin-left: max(0px, calc((100% - 1120px) / 2));   /* the page's own left edge */
-    margin-right: 0;
-    max-width: 1280px;                                   /* and not silly on ultrawide */
-  }
-  .hero { grid-template-columns: 0.74fr 1.26fr; }
-}
-
-.hero .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 26px; }
-.price-note { font-size: 0.9rem; color: var(--ink-soft); }
-/* Directly under the name, tight, so the two read as one lockup. The pull-up
-   is this large because each SVG carries a full 1.24 line-box of its own -
-   the viewBox is line-height tall, not cap-height tall - so the visual gap
-   is bigger than the margins suggest. */
-.tagline { margin: -1.1rem 0 1.4rem; }
-.tagline img { display: block; max-width: 100%; height: auto; }
-.formats {
-  margin-top: 22px; font-size: 0.84rem; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--ink-soft);
-}
-
-/* The pond. Real sprites from the plugin, laid out the way they sit in it. */
-/* v2.237.0: the hero is the plugin itself now, not a composition of its
-   sprites. v2.237.1 dropped the border; v2.237.2 puts a hairline back, dark
-   brown rather than the old fiber, and rounds the corners harder - the same
-   edge the mode clips now carry. overflow:hidden has to stay either way: it
-   is what clips the scale() below that hides the capture's window edge. */
-.pond {
-  position: relative;
-  aspect-ratio: 960 / 696;          /* the clip's own, so nothing letterboxes */
-  border: 1.5px solid var(--ink-hairline);
-  border-radius: 10px;
-  box-shadow: 0 14px 34px rgba(80,64,44,0.13);
-  overflow: hidden;
-  background: var(--paper-scene);   /* what shows until the clip arrives */
-}
-.pond video {
-  display: block; width: 100%; height: 100%; object-fit: cover;
-  /* The capture carries the plugin window's own edge, and this one is
-     ASYMMETRIC: about 2px dark down the left and 1px across the top at
-     1280, nothing on the right or bottom. The mode clips hide theirs by
-     making the box narrower than the clip, but that crops evenly and would
-     spend on two clean edges to clear two dirty ones. Inside a frame that
-     already clips, a small scale is enough: 1.2% pushes ~5.8px horizontally
-     and ~4.2px vertically past the edge, well over what is there. */
-  transform: scale(1.012);
-}
-
-/* --- generic section ---------------------------------------------------- */
-section { position: relative; z-index: 2; }
-/* v2.236.0: closer together. 44-82px top AND bottom put up to 164px between
-   sections, which read as gaps rather than as breathing room. v2.237.3 pulls
-   them in again, to 84px between bands, and takes the hero's oversized bottom
-   padding down with them - it was leaving 148px under the hero against 108
-   everywhere else, which is the seam that read as empty. */
-.band { padding-block: clamp(24px, 3vw, 42px); }
-.band + .band { border-top: 1.5px solid rgba(217,198,163,0.55); }
-.band-head { max-width: var(--measure); margin-bottom: clamp(28px, 4vw, 52px); }
-.eyebrow {
-  font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--seal-red); margin-bottom: 10px;
-}
-
-/* The note is prose, so it gets a reading measure rather than the full column
-   width, and no display heading: a personal aside wants a quieter entrance
-   than the omake outlines the product sections use. */
-/* The note is prose, so it gets a reading measure rather than the full column
-   width, and no display heading: a personal aside wants a quieter entrance
-   than the omake outlines the product sections use. */
-.note { max-width: 42rem; }
-
-/* Bigger than the eyebrows on the product sections - this one IS the heading
-   for its section rather than a label above one. */
-#note .eyebrow { font-size: 1.05rem; letter-spacing: 0.16em; margin-bottom: 16px; }
-.note p { margin: 0; }
-.note-sign {
-  margin-top: 14px !important;
-  font-size: 0.85rem; letter-spacing: 0.08em;
-  color: var(--ink-soft);
-}
-
-/* --- steps -------------------------------------------------------------- */
-.steps { display: grid; gap: clamp(24px, 3.4vw, 44px); grid-template-columns: 1fr; counter-reset: step; }
-@media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
-.step { counter-increment: step; }
-.step h3::before {
-  content: counter(step);
-  font-family: var(--font-display);
-  display: inline-grid; place-items: center;
-  width: 30px; height: 30px; margin-right: 10px;
-  border: 1.5px solid var(--seal-red); border-radius: 50%;
-  color: var(--seal-red); font-size: 0.92rem;
-  vertical-align: -6px;
-}
-.step p { font-size: 0.97em; }
-
-/* --- the demos ---------------------------------------------------------- */
-/* Two columns from 760px, so five tracks do not run a page deep. Below that
-   they stack, because a waveform in half a phone is not a waveform. */
-.tracks { list-style: none; margin: 0; padding: 0; max-width: 620px; }
-@media (min-width: 760px) {
-  .tracks {
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: clamp(26px, 3.4vw, 48px);
-    max-width: none;
-  }
-  /* The rule above a track separates it from the one before. In one column
-     that is every track but the first; in two it is every track but the first
-     of EACH column, or column two starts with a line under nothing. */
-  .track:nth-child(-n+2) { border-top: 0; padding-top: 0; }
-}
-/* The original rule, full width at 0.7, with more air around it: 14px of
-   padding either side became 22px, so the line sits in its own space rather
-   than close under the waveform above it. */
-.track {
-  padding: 22px 0;
-  border-top: 1px solid rgba(217,198,163,0.7);
-}
-.track:first-child { border-top: 0; padding-top: 0; }
-/* v2.234.0: one title a track, not a name and a note.
-   Set like the old note - upper case, letter-spaced, ink-soft - because that
-   is the register the section wants, just larger now that it carries the
-   whole label rather than qualifying a name beside it. */
-.track-head { margin-bottom: 9px; }
-.track-title {
-  font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--ink-soft); opacity: 0.8;
-}
-/* v2.233.0: a drawn waveform instead of the native bar.
-   The <audio> stays - it is the thing that actually plays, so the browser's
-   own decoding, buffering and media-session handling are untouched - but it
-   is hidden and driven by the controls below. */
-.track audio { display: none; }
-
-.player {
-  display: flex; align-items: center; gap: 12px;
-  /* Scrubbing is a drag, and a drag over text selects it - which paints
-     the blue selection box across the row. The tap highlight is the same
-     problem on touch, in a different colour. */
-  -webkit-user-select: none; user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.play-btn {
-  flex: none; width: 34px; height: 34px; padding: 0;
-  border: 1px solid rgba(217,198,163,0.9); border-radius: 50%;
-  background: var(--paper-base); color: var(--ink);
-  cursor: pointer; display: grid; place-items: center;
-  transition: background 120ms ease, border-color 120ms ease;
-}
-.play-btn:hover { background: var(--paper-scene); border-color: var(--ink-soft); }
-/* :focus off, :focus-visible on - a click should leave no ring, a Tab must.
-   Blanket `outline: none` would take the keyboard affordance with it. */
-.play-btn:focus { outline: none; }
-.play-btn:focus-visible { outline: 2px solid var(--ink-soft); outline-offset: 2px; }
-.play-btn svg { width: 12px; height: 13px; fill: currentColor; display: block; }
-/* One button, two glyphs, and which one shows is all that moves. Swapping
-   innerHTML on every play/pause would re-parse markup in a click handler. */
-.play-btn .icon-pause { display: none; }
-.track.is-playing .play-btn .icon-play { display: none; }
-.track.is-playing .play-btn .icon-pause { display: block; }
-
-.wave {
-  flex: 1 1 auto; height: 30px; cursor: pointer; display: block;
-  touch-action: none;          /* a drag scrubs rather than scrolling the page */
-}
-.wave:focus { outline: none; }
-.wave:focus-visible { outline: 2px solid var(--ink-soft); outline-offset: 3px; }
-.wave rect { fill: rgba(122,109,91,0.28); }
-.wave .played rect { fill: var(--ink); }
-
-.track-time {
-  flex: none; font-size: 0.78rem; letter-spacing: 0.06em;
-  color: var(--ink-soft); font-variant-numeric: tabular-nums;
-  min-width: 4.2em; text-align: right;
-}
-
-/* --- fish types --------------------------------------------------------- */
-.types { display: grid; gap: clamp(20px, 3vw, 30px); grid-template-columns: repeat(2, 1fr); }
-@media (min-width: 620px) { .types { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 940px) { .types { grid-template-columns: repeat(5, 1fr); } }
-/* No card. The fish sit straight on the paper, the way they do in the pond -
-   a box around each one made them read as products in a catalogue. */
-.type { text-align: center; }
-
-/* The art GROWS rather than being transform-scaled, and .art holds the layout
-   box still so the heading below it does not move.
-   
-   Not a stylistic choice - it is the fix the plugin already carries, at
-   index.html:12414: "A filtered element that is ALSO transform-scaled can be
-   rasterised at its unscaled bounds and then blown up, which clips the shadow
-   into a straight-edged rectangle." That is the grey box reported here, and
-   the same note says why it was hard to catch: "visible only while hovering
-   AND moving, which is why neither a static Chrome nor a static WebKit render
-   reproduced it" - a forced-hover headless render of this page draws the
-   shadow correctly. It needs the transition running on a composited layer.
-   
-   So the filtered element carries no transform at all, exactly as the pond
-   resizes its <svg> rather than scaling it. */
-/* The art grows on hover and nothing else happens.
-   
-   If a shadow is ever wanted back, it is a radial-gradient on the ground -
-   .fish-rest-shadow in the plugin - and NOT filter: drop-shadow. That was
-   tried three ways here and drew a rectangle every time: on the scaled
-   <img>, on the growing <img> (correct for half a second, then a box), and
-   on a static wrapper (correct at the ends of a row, boxed in the middle).
-   None of it reproduces in a static headless render, so it can only be
-   judged in a live browser - which is why the note is worth keeping even
-   with the shadow gone. */
-.type .art, .corals .art {
-  display: block; position: relative;
-  margin-inline: auto;
-}
-.type .art { height: 92px; max-width: 150px; margin-bottom: 12px; }
-/* Centred by translate, not by `inset: 0; margin: auto`.
-   
-   Measured: with auto margins the art grew RIGHTWARD, its centre moving by
-   exactly half the width it gained - koi 188.0 -> 198.0, coral 212.4 ->
-   219.4 - while the betta, alone, stayed put. The betta is the only sprite
-   narrower than its .art box, and that is the whole explanation: when an
-   absolutely positioned box with left:0/right:0 grows WIDER than its
-   container the margins can no longer both be auto, so they resolve to 0
-   and the box anchors to the left edge (CSS 2.1 10.3.7). Every other sprite
-   exactly fills .art at rest, so every other sprite overflowed rightward.
-   
-   translate(-50%, -50%) centres on the element's own size, so it holds
-   however far past .art the art grows. Safe to use a transform here now:
-   nothing on this page carries a filter any more. */
-.type img, .corals img {
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: auto; height: auto;
-  transition: max-width 180ms ease, max-height 180ms ease;
-}
-.type img { max-width: 150px; max-height: 92px; }
-.type:hover img { max-width: 170px; max-height: 104px; }
-@media (prefers-reduced-motion: reduce) {
-  .type img, .corals img { transition: none; }
-}
-.type p { font-size: 0.9em; margin: 0; color: var(--ink-soft); max-width: none; }
-
-/* --- the reef ----------------------------------------------------------- */
-.corals {
-  display: grid; gap: clamp(18px, 2.8vw, 34px);
-  grid-template-columns: repeat(2, 1fr);
-}
-@media (min-width: 640px) { .corals { grid-template-columns: repeat(4, 1fr); } }
-.corals figure { margin: 0; text-align: center; }
-.corals .art { height: 104px; max-width: 132px; }
-.corals img { max-width: 132px; max-height: 104px; }
-.corals figure:hover img { max-width: 146px; max-height: 115px; }
-.corals figcaption {
-  margin-top: 8px;
-  font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--ink-soft);
-}
-/* --- two modes ---------------------------------------------------------- */
-/* STACKED, not side by side.
-   
-   Two columns inside a 1120px page can never give a demo more than about
-   470px, and at that size the pond is a thumbnail - which is the opposite of
-   what these are for. One per row lets each run at 900px, roughly double,
-   and 900 is deliberately under the clips' own 960 so nothing is upscaled.
-   
-   The side-by-side comparison is worth less than being able to see the
-   thing: the two are still adjacent, just one above the other. */
-.modes {
-  display: grid; gap: clamp(34px, 5vw, 64px);
-  grid-template-columns: 1fr;
-}
-.mode { max-width: 900px; }
-.mode h3 { margin: 0 0 0.15em; }
-.mode h3 img { display: block; max-width: 100%; height: auto; }
-.mode-sub { font-size: 1em; color: var(--ink-soft); margin: 0 0 18px; }
-
-/* The recordings are 960x696 - a capture of the 1100x800 window, trimmed.
-   Matching that exactly means no letterboxing and no crop.
-   
-   They play themselves, loop, and have no controls - the pond does not need
-   a scrub bar to make its point. pointer-events: none so there is nothing to
-   click at all.
-
-   preload="none" and started by an IntersectionObserver rather than the
-   autoplay attribute: autoplay fetches on load, and 9.5MB arriving before
-   anyone has scrolled near it would be ten times the rest of the page.
-   Nobody who never reaches this section pays for it. The poster covers the
-   gap between arriving and the first frame decoding. */
-.mode-media {
-  display: block;
-  width: 100%;
-  /* The clips are 1280x652, and the box is deliberately a shade narrower.
-
-     Both recordings carry the plugin window's own vertical edge: one dark
-     column at x=0 and one at x=1279, RGB about (104,103,98) against washi at
-     (228,221,211). Top and bottom are clean - it is only the sides. There is
-     no ffmpeg or PyObjC here to re-crop the files, so object-fit: cover below
-     is made to do it: with the box narrower than the clip, cover scales to
-     the box HEIGHT and trims the excess width evenly off both sides.
-
-     1264/652 against the clip's 1280/652 trims 8 native px per side, six
-     times the 1.33px line, which leaves room for the scaler to soften an edge
-     without dragging it back into view. The crop is constant in the clip's
-     own pixels whatever size it renders at, which a transform: scale would
-     not be. It costs 0.6% off each side.
-
-     Both clips are exactly the same size, so neither is letterboxed and the
-     pair stay identical to each other.
-
-     v2.237.2 added the border. box-sizing is border-box, so it comes off the
-     content box the crop is measured against: the trim drops from 8 native px
-     per side to about 6, still well clear of the 1.33px line. */
-  aspect-ratio: 1264 / 652;
-  pointer-events: none;
-  border: 1.5px solid var(--ink-hairline);
-  border-radius: 10px;
-  background: var(--paper-scene);
-  object-fit: cover;
-}
-.mode-media.is-empty {
-  border: 1.5px dashed var(--paper-fiber);
+.tv {
+  position: fixed; inset: 0;
   display: grid; place-items: center;
-  color: var(--ink-soft); text-align: center; padding: 16px;
+  padding: clamp(10px, 2.6vmin, 38px);
+  padding-top: calc(clamp(10px, 2.6vmin, 38px) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(clamp(10px, 2.6vmin, 38px) + env(safe-area-inset-bottom, 0px));
 }
 
-/* --- demo --------------------------------------------------------------- */
-/* The walkthrough is in, so this stops being a placeholder: solid hairline,
-   10px corners and the hero's shadow, which is the edge every other moving
-   picture on the page carries (.pond, .mode-media).
-
-   overflow:hidden is not decoration. An iframe paints its own square corners
-   and will not inherit a radius from its parent, so without it the video sits
-   in a rounded frame with four corners poking out of it.
-
-   The grid centring and padding went with the placeholder text: 24px of
-   padding under a child sized 100%/100% would have pushed the video out of
-   the box. */
-.demo-frame {
-  aspect-ratio: 16 / 9;
-  background: var(--paper-scene);
-  border: 1.5px solid var(--ink-hairline);
-  border-radius: 10px;
-  box-shadow: 0 14px 34px rgba(80,64,44,0.13);
+/* The screen. position:relative because everything that used to be fixed to
+   the viewport is now absolute to THIS - the dock and the beats sheet both
+   belong to the picture, not to the page around it.
+   overflow:hidden is what makes the corners a screen edge rather than a
+   rounded div with content leaking past it. */
+.screen {
+  position: relative;
+  width: 100%; height: 100%;
   overflow: hidden;
-}
-/* The player's own background is BLACK, and it shows as a hairline down each
-   side whenever the box is not exactly 16:9.
+  border-radius: clamp(10px, 1.8vmin, 26px);
+  display: flex;
+  flex-direction: column;
 
-   box-sizing is border-box, so aspect-ratio sizes the BORDER box and the
-   1.5px hairline comes off the content box: 997/559.5 = 1.782 against 16:9's
-   1.778. Relatively wider, so the player fits the video to the height and
-   pillars the remainder - a 1px black line inside our own border, on a page
-   where nothing else is darker than 0.8% of the frame.
+  /* Flat colour with a 1-in-3px horizontal pinstripe over it. A repeating
+     gradient is not shading - every stop is a hard stop, so it renders as
+     lines rather than a fade. */
+  background-color: var(--shell);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      var(--shell-line) 0px,
+      var(--shell-line) 1px,
+      transparent 1px,
+      transparent 3px);
 
-   Chasing that sub-pixel with a corrected ratio would break again at the next
-   border change, so overscan instead and let the frame's overflow:hidden crop
-   it. Same trick .pond video uses (transform: scale(1.012)) for the capture's
-   window edge, and .mode-media for its dark columns.
-
-   overflow:hidden clips at the PADDING box, which here is the content box, so
-   the crop is 100%+8px against a -4px margin: 4px a side, four times the line
-   and 0.4% of the width. Overscanning also flips the mismatch - the iframe is
-   now a shade NARROWER than 16:9, so the player letterboxes about 0.5px top
-   and bottom instead, which the same 4px swallows. */
-.demo-frame iframe {
-  display: block;
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-  margin: -4px;
-  border: 0;
+  /* The tube sits inside the moulding, so the bezel throws a shadow onto it
+     and the glass throws one back out. */
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.14),
+    inset 0 0 60px rgba(0,0,0,0.30),
+    0 0 0 clamp(6px, 1.2vmin, 14px) #17181b,
+    0 0 0 clamp(7px, 1.4vmin, 16px) rgba(255,255,255,0.05),
+    0 18px 60px rgba(0,0,0,0.7);
 }
 
-/* --- pricing ------------------------------------------------------------ */
-.buy-card {
-  background: var(--paper-scene);
-  border: 1.5px solid var(--paper-fiber);
-  border-radius: 4px;
-  padding: clamp(28px, 5vw, 52px);
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(80,64,44,0.09);
-  max-width: 620px; margin-inline: auto;
+/* The picture itself: a grille, scanlines and a vignette, in that order.
+   Deliberately faint - the reference is a blue test card with nothing to
+   read, and this has a UI under it. All of it is tunable in one place. */
+.crt {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255,0,0,0.035) 0px, rgba(255,0,0,0.035) 1px,
+      rgba(0,255,0,0.035) 1px, rgba(0,255,0,0.035) 2px,
+      rgba(0,80,255,0.035) 2px, rgba(0,80,255,0.035) 3px),
+    repeating-linear-gradient(0deg,
+      rgba(0,0,0,0.085) 0px, rgba(0,0,0,0.085) 1px,
+      transparent 1px, transparent 3px),
+    /* The phosphor cast, LAST in the stack so it sits under the grille and
+       tints what shows through rather than colouring the grille itself. A
+       flat wash rather than a blend mode: soft-light and screen both lift
+       the blacks, and the vignette below depends on those staying dark. */
+    linear-gradient(rgba(58,146,214,0.085), rgba(58,146,214,0.085));
 }
-.price { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 4.4rem); line-height: 1; margin: 4px 0 6px; }
-/* Launch offer. .was is the old price struck through beside the new one -
-   smaller and in soft ink, so the eye lands on what it costs TODAY and the
-   original is there only to say what the saving is. */
-.price .was { font-size: 0.42em; color: var(--ink-soft); text-decoration: line-through;
-              margin-right: 0.28em; vertical-align: 0.42em; }
-/* Letter-spacing puts a trailing space after the LAST character too, so
-   centred text sits visually left by half of it. A matching text-indent
-   pushes it back - this is why the card's SHIZEN looked off-centre. */
-.buy-card .eyebrow { font-size: 1rem; text-indent: 0.2em; margin-bottom: 6px; }
-/* Under the price, labelling the strikethrough above it. Same caps-and-
-   tracking treatment as the eyebrow so the card keeps one voice, and the
-   same text-indent for the same reason. */
-.launch-note {
-  font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--seal-red); margin: 8px auto 0;
-}
-/* The text-indent belongs to the CENTRED copy only. In the hero the column
-   is left-aligned, so indenting would push the label 0.2em right of the
-   button it sits above - the very misalignment it fixes in the card. */
-.buy-card .launch-note { text-indent: 0.2em; }
-.hero .launch-note { margin: 0 0 10px; }
-.buy-card ul { list-style: none; padding: 0; margin: 26px auto 30px; max-width: 400px; text-align: left; }
-.buy-card li { padding-left: 26px; position: relative; margin-bottom: 9px; font-size: 0.96em; }
-.buy-card li::before { content: "—"; position: absolute; left: 0; color: var(--seal-red); }
-
-/* --- specs + faq -------------------------------------------------------- */
-.cols { display: grid; gap: clamp(24px, 4vw, 52px); grid-template-columns: 1fr; }
-@media (min-width: 780px) { .cols { grid-template-columns: 1fr 1fr; } }
-.spec-list { margin: 0; }
-.spec-list dt { font-weight: 600; font-family: var(--font-display); margin-top: 16px; }
-.spec-list dd { margin: 2px 0 0; color: var(--ink-soft); font-size: 0.95em; }
-.spec-list dd em { font-style: normal; color: var(--ink); }
-.spec-list dt:first-child { margin-top: 0; }
-
-/* --- the changelog ------------------------------------------------------ */
-.changelog { list-style: none; margin: 0; padding: 0; }
-.changelog li {
-  padding: 11px 0;
-  border-top: 1px solid rgba(217,198,163,0.7);
-}
-.changelog li:first-child { border-top: 0; padding-top: 0; }
-.cl-head { display: flex; align-items: baseline; gap: 10px; }
-.cl-ver {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  color: var(--ink);
-}
-.cl-date {
-  font-size: 0.76rem; letter-spacing: 0.09em; text-transform: uppercase;
-  color: var(--ink-soft); opacity: 0.8;
-}
-.cl-what {
-  display: block;
-  margin-top: 3px;
-  font-size: 0.93em; line-height: 1.5;
-  color: var(--ink-soft);
-}
-/* Two lines under one version need more air between them than 3px, or they
-   read as one paragraph that changed subject mid-sentence. */
-.cl-what + .cl-what { margin-top: 10px; }
-
-/* --- contact ------------------------------------------------------------ */
-.contact-line { max-width: 42rem; margin: 0; }
-.contact-mail {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 1.12rem;
-  color: var(--ink);
-}
-/* The address carries extra size where it sits on its own line. In the
-   refunds sentence it is mid-paragraph, where that size reads as a mistake. */
-.sub-h { margin-top: 30px; }
-.refund-line .contact-mail { font-size: inherit; margin-top: 0; }
-/* .contact-line has no margin - it is normally the only one in its block. */
-.refund-line + .refund-line { margin-top: 0.7em; }
-
-/* --- mailing list ------------------------------------------------------- */
-/* The form stays `hidden` in the markup and is un-hidden by script only when
-   an endpoint is configured. A form that silently discards addresses is
-   worse than no form at all. */
-.signup { margin: 26px 0 0; max-width: 34rem; }
-.signup-label {
-  display: block;
-  font-size: 0.95rem; line-height: 1.5;
-  color: var(--ink-soft);
-  margin-bottom: 9px;
-}
-.signup-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.signup-input {
-  flex: 1 1 15rem; min-width: 0;
-  font: inherit;            /* inputs inherit no face: the UA gives them Arial */
-  font-size: 1rem;
-  padding: 14px 16px;
-  color: var(--ink);
-  background: var(--paper-scene);
-  border: 1.5px solid var(--paper-fiber);
-  border-radius: 3px;
-}
-.signup-input::placeholder { color: var(--ink-soft); opacity: 0.55; }
-.signup-input:focus-visible { outline: 2px solid var(--seal-red); outline-offset: 1px; }
-/* Quieter than .btn-buy deliberately: this sits a few lines under the real
-   purchase and must not compete with it. Ink rather than seal red. */
-.signup-btn {
-  flex: 0 0 auto;
-  font-size: 1rem;
-  padding: 14px 24px;
-  color: #fdf8ef;
-  background: var(--ink-soft);
-  box-shadow: 0 3px 0 rgba(51,44,35,0.45);
-}
-.signup-btn:hover  { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(51,44,35,0.45); }
-.signup-btn:active { transform: translateY(1px);  box-shadow: 0 1px 0 rgba(51,44,35,0.45); }
-.signup-note { margin: 10px 0 0; font-size: 0.86rem; color: var(--ink-soft); opacity: 0.8; }
-/* On a phone the two would sit side by side and the field would shrink to a
-   sliver rather than wrap - flex prefers shrinking an item with min-width 0
-   over breaking the line. Stacking makes the button a full-width tap target. */
-@media (max-width: 480px) {
-  .signup-row { flex-direction: column; align-items: stretch; }
-  .signup-btn { width: 100%; }
+.crt::after {
+  content: "";
+  position: absolute; inset: 0;
+  /* Wider than the box on purpose, so the darkening is a corner falloff
+     rather than a ring sitting inside the edges. Stronger than it was, and
+     the dark end carries blue rather than grey so the corners go the way a
+     tube's do. */
+  background: radial-gradient(122% 102% at 50% 50%,
+              transparent 44%, rgba(8,20,38,0.50) 100%);
 }
 
-/* --- footer ------------------------------------------------------------- */
-.site-foot {
+@media (prefers-reduced-motion: reduce) {
+  .crt { display: none; }
+}
+
+/* --- head ---------------------------------------------------------------- */
+
+.head {
   position: relative; z-index: 2;
-  border-top: 1.5px solid rgba(217,198,163,0.7);
-  padding-block: 34px 48px;
-  display: flex; flex-wrap: wrap; gap: 16px;
-  justify-content: space-between; align-items: center;
-  font-size: 0.86rem; color: var(--ink-soft);
+  display: flex; align-items: baseline; justify-content: center;
+  gap: 18px;
+  padding: 30px 26px 4px;
 }
-.site-foot a { color: var(--ink-soft); }
-.foot-left { display: inline-flex; align-items: center; gap: 10px; }
-/* Sized in em so they track the footer's own type rather than needing a
-   breakpoint of their own. */
-.foot-social {
-  display: inline-grid; place-items: center;
-  width: 1.9em; height: 1.9em;
-  border-radius: 50%;
+
+.wordmark {
+  font-family: var(--font-mark);
+  /* Baumans has a single weight (400). font-weight:700 would make the
+     browser SYNTHESISE a bold by smearing the outlines, which on a
+     geometric display face looks like a printing fault. Left at 400; the
+     face is heavy enough at size to carry the title. */
+  font-weight: 400;
+  font-size: clamp(1.9rem, 4.4vw, 3rem);
+  /* letter-spacing adds a trailing space after the LAST character, which
+     shifts a centred line left by half the tracking. A matching text-indent
+     puts it back - the same fix the Shizen page carries. */
+  letter-spacing: 0.04em;
+  text-indent: 0.04em;
+  margin: 0;
+  color: var(--ink);
+}
+
+/* The wordmark took the clock's place, straddling the curve the way the
+   time did: the name in the light above it, the date in the grey below.
+   The curve's middle is at y=106 of a 230 viewBox, 46.1% down the dock, and
+   the name's box ends there. */
+.clock {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  top: 0;
+  text-align: center;
   color: var(--ink-soft);
-  transition: color 130ms ease, background 130ms ease;
+  pointer-events: none;
+  line-height: 1;
 }
-.foot-social:hover, .foot-social:focus-visible {
-  color: #b1543c;
-  background: rgba(177,84,60,0.09);
+/* --- the letter ---------------------------------------------------------- */
+
+/* The console's message board: a white card with a blue header, the sender
+   at the top and ruled paper under the writing. Sized to content rather than
+   to the viewport, unlike the beats sheet, which has to hold a fixed-height
+   iframe. */
+.sheet.is-letter {
+  width: min(640px, 100%);
+  height: auto;
+  max-height: min(84vh, 760px);
+  background: #fff;
+  box-shadow: 0 0 0 1px #9aa0a5,
+              inset 0 0 0 3px #f4f5f6,
+              0 18px 48px rgba(20,40,55,0.34);
+}
+
+.letter-head {
+  flex: none;
+  background: linear-gradient(180deg, #6ec9ef 0%, #54b8e6 100%);
+  color: #fff;
+  text-align: center;
+  font-size: 1.25rem;
+  padding: 13px 18px;
+  border-radius: 8px 8px 0 0;
+  text-shadow: 0 1px 1px rgba(20,60,90,0.25);
+}
+
+.letter-body { overflow-y: auto; padding: 20px clamp(18px, 3vw, 30px) 10px; }
+
+.letter-from { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.letter-avatar {
+  flex: none;
+  width: 54px; height: 54px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  color: #6b7a84;
+  background: #eef3f6;
+  box-shadow: inset 0 0 0 1px #cfd8de;
+}
+.letter-avatar svg { width: 34px; height: 34px; }
+.letter-name { font-size: 1.05rem; color: var(--ink); }
+
+/* Ruled paper. The gradient's period and the text's line-height are the SAME
+   number on purpose - 2.1rem - which is the only thing that keeps the
+   writing sitting on the lines instead of drifting off them a paragraph in.
+   Change one and the other has to move with it. */
+.letter-text {
+  line-height: 2.1rem;
+  font-size: 1rem;
+  color: var(--ink);
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0, transparent calc(2.1rem - 1px),
+      #dbe8f0 calc(2.1rem - 1px), #dbe8f0 2.1rem);
+  padding-bottom: 2.1rem;
+}
+.letter-text p { margin: 0 0 2.1rem; }
+.letter-text p:last-child { margin-bottom: 0; }
+
+.letter-foot {
+  flex: none;
+  display: flex; justify-content: center;
+  padding: 14px 18px 18px;
+}
+.letter-btn {
+  font: inherit;
+  font-size: 1.05rem;
+  padding: 10px 34px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  background: linear-gradient(180deg, #f4f6f7 0%, #e3e6ea 52%, #d2d6db 100%);
+  box-shadow:
+    inset 0 0 0 3px var(--wii-line),
+    inset 0 2px 2px rgba(255,255,255,0.9),
+    0 3px 6px rgba(40,56,68,0.18);
+  transition: transform 140ms ease, box-shadow 140ms ease,
+              background 140ms ease, color 140ms ease;
+}
+.letter-btn:hover, .letter-btn:focus-visible {
+  transform: translateY(-2px);
+  color: var(--wii-blue);
+  background: linear-gradient(180deg, #ffffff 0%, #f2f7fa 55%, #e4edf3 100%);
+  box-shadow:
+    inset 0 0 0 3px var(--wii-blue),
+    inset 0 2px 2px rgba(255,255,255,0.9),
+    0 5px 10px rgba(40,56,68,0.2),
+    0 0 12px 4px rgba(var(--glow), 0.55);
   outline: none;
 }
-.foot-social svg { width: 1.05em; height: 1.05em; display: block; }
+
+/* In the grey below the curve, where the date used to be. .clock is already
+   centred on the dock, so these inherit that and only need their own
+   vertical placement.
+   pointer-events comes back ON: .clock turns it off so the name cannot
+   swallow clicks, and these are the one thing inside it meant to take them. */
+.socials {
+  display: flex; justify-content: center;
+  gap: 20px;
+  margin-top: 62px;
+}
+.social {
+  pointer-events: auto;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--ink-soft);
+  /* The dock buttons' treatment at half the size - same gradient, a 3px
+     ring rather than 4 so they do not out-weigh the knobs beside them. */
+  background: linear-gradient(180deg, #f4f6f7 0%, #e3e6ea 52%, #d2d6db 100%);
+  box-shadow:
+    inset 0 0 0 3px var(--wii-line),
+    inset 0 2px 2px rgba(255,255,255,0.9),
+    0 3px 6px rgba(40,56,68,0.18),
+    0 1px 2px rgba(40,56,68,0.12);
+  transition: transform 140ms ease, box-shadow 140ms ease,
+              background 140ms ease, color 140ms ease;
+}
+.social:hover, .social:focus-visible {
+  transform: translateY(-2px);
+  color: var(--wii-blue);
+  background: linear-gradient(180deg, #ffffff 0%, #f2f7fa 55%, #e4edf3 100%);
+  box-shadow:
+    inset 0 0 0 3px var(--wii-blue),
+    inset 0 2px 2px rgba(255,255,255,0.9),
+    0 5px 10px rgba(40,56,68,0.2),
+    0 0 12px 4px rgba(var(--glow), 0.55);
+  outline: none;
+}
+.social svg { width: 28px; height: 28px; display: block; }
+
+@media (max-width: 560px) {
+  /* The two labels and the three socials cannot share this width: at 390px
+     "Beats" and "About me" ran into the icons. The knobs' icons say what
+     they are. */
+  .dock-label { display: none; }
+  .socials { gap: 14px; margin-top: 44px; }
+  .social { width: 48px; height: 48px; }
+  .social svg { width: 23px; height: 23px; }
+}
+
+.clock .wordmark {
+  font-size: clamp(2.7rem, 5.9vw, 4.3rem);
+  /* Pushes it down so the baseline lands just above the curve. Less than it
+     was, which is what lifts it - the bigger size would otherwise have eaten
+     the gap from the other end. */
+  padding-top: 6px;
+  text-shadow: none;
+}
+
+
+/* --- the grid ------------------------------------------------------------ */
+
+/* Back to the top, not centred in the leftover space.
+   The top padding is not zero, though: the old layout got its gap from the
+   standfirst that used to sit here - 4px of header padding, a ~16px line and
+   a 20px margin. Deleting the text deleted the gap with it, so ~36px stands
+   in for what the words were doing. */
+.menu {
+  position: relative; z-index: 2;
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  /* No header any more, so the grid centres in what the dock leaves rather
+     than hanging from the top. */
+  padding: clamp(18px, 3vh, 30px) 26px calc(var(--dock-h) + 26px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* A channel is 16:10 because that is the console's own tile, and because a
+   shape wider than it is tall reads as a screen rather than an app icon. */
+.channel {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 17px;
+  /* A transformed element with overflow:hidden does not always keep its
+     rounded clip: the browser composites the scaled layer and the square
+     corners of the content come back. Promoting it up front means the clip
+     is rasterised WITH the radius, and the radius is repeated on the art
+     inside so it survives either way. Only .is-live transforms, so only it
+     is promoted - twelve promoted layers for eleven tiles that never move
+     would be waste. */
+  background: var(--tile);
+  /* Three stacked shadows, same hue, widening and weakening. One shadow
+     gives a hard-edged halo; stacking them is what makes it read as bloom.
+     No inset highlight, no border: the glow IS the edge. */
+  /* Hairline first, then the bloom outside it. The reference's channels are
+     bordered rather than glowing; keeping both puts the edge back without
+     losing the look that was asked for earlier. */
+  box-shadow:
+    0 0 0 1px var(--tile-edge),
+    0 0 5px  1px rgba(var(--glow), 0.55),
+    0 0 15px 5px rgba(var(--glow), 0.34),
+    0 0 32px 13px rgba(var(--glow), 0.18);
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+/* An empty slot keeps the white plate and loses most of the bloom. Dimming
+   the glow rather than greying the fill is what keeps the shelf reading as
+   slots waiting to be filled instead of as tiles that failed to load. */
+.channel.is-soon {
+  box-shadow:
+    0 0 0 1px var(--tile-edge),
+    0 0 4px  1px rgba(var(--glow), 0.22),
+    0 0 12px 4px rgba(var(--glow), 0.11);
+}
+
+/* Only a channel that GOES somewhere reacts. An empty slot on the console is
+   inert too, and a hoverable placeholder promises a page that does not
+   exist. */
+.channel.is-live {
+  cursor: pointer;
+  will-change: transform;
+  /* Each product takes a 2x2 block, so the grid is two big tiles over four
+     ordinary ones rather than a flat twelve.
+     The 16/10 STAYS on a spanning tile. With one product the singles beside
+     it sized the rows and the big tile took its height from them; with two
+     side by side there is nothing else in those rows, and without a ratio
+     of their own they collapsed to a strip (measured: 1040x22). Two columns
+     plus a gap at 16/10 is a few px short of two rows plus a gap, which the
+     tile absorbs; nothing visible. */
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.channel.is-live:hover,
+.channel.is-live:focus-visible {
+  transform: translateY(-5px) scale(1.018);
+  box-shadow:
+    0 0 0 1px var(--wii-line),
+    0 0 12px 3px rgba(var(--glow), 0.70),
+    0 0 30px 12px rgba(var(--glow), 0.42),
+    0 0 56px 24px rgba(var(--glow), 0.20);
+  outline: none;
+}
+
+.channel.is-live:active { transform: translateY(-1px) scale(1.004); }
+
+/* The live tile's own world: the plugin actually running. */
+.ch-art {
+  position: absolute; inset: 0;
+  background-color: #fffdf7;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Two layers crossfading on a 4s loop: the OG card as it is, then the
+   plugin running, then back.
+
+   The card is used WHOLE - its own wordmark, tagline and byline are in the
+   image, so nothing is drawn over it. The grain overlay went for the same
+   reason: the card already carries its own, and multiplying a second one
+   would darken both layers.
+
+   Only the video animates. Fading one layer against a static one is a true
+   crossfade; animating both leaves them each at partial opacity mid-way and
+   the washi shows through the gap between them.
+
+   3.5s card, 1s across, 3.5s clip, 1s back - 9s round. The stops are those
+   seconds as percentages of 9, not round numbers: 3.5/9 = 38.9%.
+
+   The card here is og-card-TILE, not og-card-v5. Same artwork, paper retoned
+   to the plugin's own washi: v5 sits at (244,244,236) for the light site
+   page, the clip at (222,217,209), and crossfading between them made the
+   paper itself brighten and cool by 22-27 levels every few seconds - a
+   visible flash that read as a fault rather than a transition. The tile copy
+   measures (221,216,208): one level off the clip on every channel. v5 is
+   untouched and still the og:image.
+   The clip plays continuously rather than starting on each fade, so it
+   arrives mid-motion instead of jumping to its first frame.
+
+   HOVER holds it on the clip. Handled in script, not CSS, because a running
+   animation beats a plain opacity declaration - pausing it does not release
+   the value either, so the animation has to be removed and put back. The
+   transition below is what makes both directions a fade rather than a cut. */
+.ch-layer {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  display: block;
+}
+.ch-clip {
+  opacity: 0;
+  animation: tileCross 9s ease-in-out infinite;
+  transition: opacity 1s ease;
+}
+@keyframes tileCross {
+  0%, 38.9%  { opacity: 0; }
+  50%, 88.9% { opacity: 1; }
+  100%       { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ch-clip { animation: none; opacity: 0; }
+}
+
+/* An empty slot says so ONCE, on the first of them. A grid of eleven
+   identical "coming soon" labels reads as eleven failures. */
+.channel.is-soon .soon {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em; text-indent: 0.18em;
+  text-transform: uppercase;
+  color: rgba(61,74,82,0.34);
+}
+
+/* --- the dock ------------------------------------------------------------ */
+
+.dock {
+  /* absolute, not fixed: the dock belongs to the screen now. */
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: var(--dock-h);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.dock svg.plate { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Sampled down the reference's own bar: it is darkest immediately under the
+   curve - (198,201,206) - and lightens to (229,231,236) about a third of the
+   way down, then holds. That dark band reads as the plate catching shadow
+   from the lip above it, and it is most of why the flat fill looked like
+   paper rather than moulded plastic. */
+.plate-fill { fill: url(#dockGrad); }
+.plate-edge { fill: none; stroke: var(--wii-line); stroke-width: 3.5; }
+
+.dock-row {
+  position: absolute;
+  left: 0; right: 0;
+  /* The knobs were landing ~4px off the bottom of the page: the row ran to
+     the dock's own edge, so centring in it left no floor. It now stops 26px
+     short, and the dock is taller, which is what lifts the whole bar. */
+  top: 26%;
+  bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(16px, 3vw, 44px);
+  pointer-events: none;
+}
+
+.knob {
+  pointer-events: auto;
+  width: 120px; height: 120px;
+  border: 0; padding: 0;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  /* Light at the top, darker at the foot - the reference's buttons run
+     ~243 down to ~225 and read as domed rather than printed. The ring goes
+     2px -> 4px: measured on the reference it is about 6-7% of the button's
+     diameter, which at 120px is nearer 8, but 4 carries the weight without
+     turning the button into a washer.
+     No white hairline outside the blue - it read as a seam rather than a
+     highlight. A drop shadow instead, which is what lifts the button off
+     the plate rather than outlining it on top of it. */
+  background: linear-gradient(180deg, #f4f6f7 0%, #e3e6ea 52%, #d2d6db 100%);
+  box-shadow:
+    inset 0 0 0 4px var(--wii-line),
+    inset 0 2px 2px rgba(255,255,255,0.9),
+    0 3px 6px rgba(40,56,68,0.18),
+    0 1px 2px rgba(40,56,68,0.12);
+  color: var(--ink-soft);
+  transition: transform 140ms ease, box-shadow 140ms ease,
+              background 140ms ease, color 140ms ease;
+}
+.knob:hover, .knob:focus-visible {
+  transform: translateY(-2px);
+  color: var(--wii-blue);
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 2px var(--wii-blue),
+    0 0 10px 3px rgba(var(--glow), 0.55),
+    0 0 24px 9px rgba(var(--glow), 0.26);
+  outline: none;
+}
+.knob svg.ico { width: 48px; height: 48px; display: block; }
+
+/* A knob and its word travel together: the label is part of the control,
+   so hovering or focusing either lights both. */
+.dock-item {
+  pointer-events: auto;
+  display: flex; align-items: center; gap: 15px;
+  background: none; border: 0; padding: 0;
+  text-decoration: none; cursor: pointer;
+  color: var(--ink-soft);
+  /* font:inherit, and it is not optional. A <button> does NOT inherit
+     font-family - the UA sheet gives it Arial - so "Beats" was rendering in
+     Arial while "Contact", which is an <a>, was in Baumans. The two labels
+     were in different typefaces and it was not obvious until they sat side
+     by side. */
+  font: inherit;
+}
+.dock-label { font-size: 1.15rem; letter-spacing: 0.02em; white-space: nowrap; }
+.dock-item:hover .dock-label,
+.dock-item:focus-visible .dock-label { color: var(--wii-blue); }
+.dock-item:focus-visible { outline: none; }
+.dock-item:hover .knob,
+.dock-item:focus-visible .knob {
+  transform: translateY(-2px);
+  color: var(--wii-blue);
+  background: linear-gradient(180deg, #ffffff 0%, #f2f7fa 55%, #e4edf3 100%);
+  box-shadow:
+    inset 0 0 0 4px var(--wii-blue),
+    inset 0 2px 2px rgba(255,255,255,0.9),
+    0 5px 10px rgba(40,56,68,0.2),
+    0 0 12px 4px rgba(var(--glow), 0.6),
+    0 0 28px 10px rgba(var(--glow), 0.3);
+}
+/* The knob is now a span inside the control, so it must not take the hit
+   itself or the label stops being part of the same button. */
+.dock-item .knob { pointer-events: none; }
+
+/* --- the beats dialog ---------------------------------------------------- */
+
+/* The console's system dialog: a grey plate, a hairline, hard-centred, over
+   a dimmed everything-else. Not the dark list it is modelled on - that is a
+   different site's palette, and a black panel in the middle of this shell
+   would look like a different application had opened. */
+.sheet-back {
+  /* absolute too - the dialog opens ON the screen, not over the set. */
+  position: absolute; inset: 0; z-index: 40;
+  background: rgba(40,48,54,0.38);
+  display: grid; place-items: center;
+  padding: clamp(12px, 4vw, 40px);
+}
+.sheet-back[hidden] { display: none !important; }
+
+.sheet {
+  /* Wider than the 760 the hand-built list wanted. The Blaze player is
+     designed up to 1024px and gets cramped below it - still comfortably a
+     dialog at this size rather than a page. */
+  width: min(1000px, 100%);
+  /* A DEFINITE height, not a max: the iframe below is sized in percent, and
+     a percentage of an auto height resolves to nothing. */
+  height: min(88vh, 860px);
+  display: flex; flex-direction: column;
+  background: #e8eaec;
+  border-radius: 11px;
+  box-shadow: 0 0 0 1px #9aa0a5,
+              inset 0 0 0 3px #f4f5f6,
+              0 18px 48px rgba(20,40,55,0.34);
+}
+
+.sheet-head {
+  flex: none;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 15px 18px 12px;
+  border-bottom: 1px solid #c9ced2;
+}
+.sheet-title { font-size: 1.02rem; color: var(--ink); }
+.sheet-sub   { font-size: 0.76rem; color: var(--ink-soft); margin-top: 2px; }
+
+.sheet-close {
+  flex: none;
+  width: 34px; height: 34px; border: 0; padding: 0;
+  border-radius: 50%;
+  background: #dfe2e6;
+  box-shadow: inset 0 0 0 2px var(--wii-line);
+  color: var(--ink-soft);
+  display: grid; place-items: center; cursor: pointer;
+}
+.sheet-close:hover, .sheet-close:focus-visible {
+  color: var(--wii-blue); background: #fff; outline: none;
+  box-shadow: inset 0 0 0 2px var(--wii-blue), 0 0 10px 2px rgba(var(--glow),0.5);
+}
+
+/* 18px from the buy button to the sheet edge measured as "not overflowing"
+   and still read as crowded. The number was right and the look was wrong, so
+   this is breathing room rather than a fix. */
+/* overflow:hidden, not auto. The iframe fills the body exactly and scrolls
+   its OWN document, so our container never needs to - and must not, or the
+   two scrollbars nest. */
+.sheet-body { flex: 1; min-height: 0; overflow: hidden; padding: 0; border-radius: 0 0 11px 11px; }
+.sheet-body .store-frame { display: block; width: 100%; height: 100%; border: 0; }
+
+.beat-empty { padding: 34px 18px; text-align: center; color: var(--ink-soft); font-size: 0.9rem; }
+
+/* --- narrow -------------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  /* Two columns, not three: two 2x2 tiles cannot share three columns, and
+     auto-placement would stack them with a column of singles down the side.
+     Here each product is a wide tile across the top and the singles pair up
+     below. */
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 13px; }
+  .channel.is-live { grid-row: auto; }
+}
+
+@media (max-width: 560px) {
+  :root { --dock-h: 186px; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 11px; }
+  .head { padding-top: 22px; }
+  .knob { width: 92px; height: 92px; }
+  .knob svg.ico { width: 36px; height: 36px; }
+  .menu { padding-left: 16px; padding-right: 16px; }
+
+  /* Still two columns (set at 860px); fewer empty slots under the products. */
+  .channel:nth-child(n+6) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .channel, .knob { transition: none; }
+  .channel.is-live:hover, .channel.is-live:focus-visible { transform: none; }
+}
 </style>
 
 <!-- Meta Pixel. Base code as Meta supplies it, with the <noscript> moved to
@@ -818,776 +766,297 @@ fbq('track', 'PageView');
 
 <body>
 
-<div class="wrap">
-  <header class="site-head">
-    <a class="wordmark" href="#top"><picture><source media="(max-width: 700px)" srcset="assets/type/wordmark-narrow.svg"><img src="assets/type/wordmark-wide.svg" alt="Shizen"></picture> <small>Jayu Sounds</small></a>
-    <nav class="site-nav">
-      <a href="#hear" class="hide-sm">Hear it</a>
-      <a href="#how" class="hide-sm">How it works</a>
-      <a href="#sound" class="hide-sm">Sound</a>
-      <a href="#specs" class="hide-sm">Requirements</a>
-      <a href="#buy">Buy</a>
-    </nav>
-  </header>
-</div>
+<!-- The whole menu lives on a screen, inside a set. The bezel is the
+     page; the screen is what used to be the page. -->
+<div class="tv">
+  <div class="screen">
+    <main class="menu">
+      <div class="grid">
 
-<main id="top">
-
-  <!-- ================= hero ================= -->
-  <div class="wrap hero-wrap">
-    <section class="hero">
-      <div class="hero-copy">
-        <h1><picture><source media="(max-width: 700px)" srcset="assets/type/h1-hero-narrow.svg"><img src="assets/type/h1-hero-wide.svg" alt="A pond that plays itself."></picture></h1>
-        <p class="tagline"><picture><source media="(max-width: 700px)" srcset="assets/type/hero-tagline-narrow.svg"><img src="assets/type/hero-tagline-wide.svg" alt="a pond that plays itself."></picture></p>
-        <p class="lede">
-          Add your samples and let the rhythms and harmonies of nature speak
-          for itself.
-        </p>
-
-        <div class="cta-row">
-          <!-- The live Lemon Squeezy checkout. `?embed=1`, plus lemon.js at
-               the foot of the page, opens it as an overlay rather than
-               navigating away - the buyer never leaves this page.
-               The price appears here, on the buy card's heading and on its
-               button - all three have to match the variant, or the overlay
-               opens at a different number than the one that was clicked. -->
-          <a class="btn btn-buy lemonsqueezy-button"
-             href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0">
-            Buy $39.99
-          </a>
-          <a class="btn btn-ghost" href="#hear">Hear it first</a>
-        </div>
-        <p class="price-note">One-time purchase. Free updates. No subscription.</p>
-
-        <p class="formats">VST3 &nbsp;·&nbsp; Audio Unit &nbsp;·&nbsp; Standalone</p>
-      </div>
-
-      <div class="pond" aria-hidden="true">
-        <video class="hero-clip" playsinline muted loop
-               preload="none" disablepictureinpicture
-               poster="assets/video/hero-clip-poster.jpg"
-               src="assets/video/hero-clip.mp4"></video>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= hear ================= -->
-  <div class="wrap">
-    <section class="band" id="hear">
-      <div class="band-head">
-        <p class="eyebrow">Listen</p>
-        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-hear-narrow.svg"><img src="assets/type/h2-hear-wide.svg" alt="Hear the pond"></picture></h2>
-      </div>
-
-      <!-- preload="none" on every player: five audio files would otherwise be
-           fetched before anyone pressed anything, on a page whose whole
-           payload is under a megabyte. -->
-      <ol class="tracks">
-          <li class="track">
-            <div class="track-head">
-              <span class="track-title">Lush Pads/Ambiences</span>
-            </div>
-            <div class="player" data-peaks="demo-3">
-              <button class="play-btn" type="button" aria-label="Play Lush Pads/Ambiences">
-                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
-              </button>
-              <svg class="wave" role="slider" tabindex="0"
-                   aria-label="Seek within Lush Pads/Ambiences"
-                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
-              <span class="track-time">0:00</span>
-              <audio preload="none" src="assets/audio/demo-3.m4a"></audio>
-            </div>
-          </li>
-          <li class="track">
-            <div class="track-head">
-              <span class="track-title">Gorgeous Atmospheres</span>
-            </div>
-            <div class="player" data-peaks="demo-5">
-              <button class="play-btn" type="button" aria-label="Play Gorgeous Atmospheres">
-                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
-              </button>
-              <svg class="wave" role="slider" tabindex="0"
-                   aria-label="Seek within Gorgeous Atmospheres"
-                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
-              <span class="track-time">0:00</span>
-              <audio preload="none" src="assets/audio/demo-5.m4a"></audio>
-            </div>
-          </li>
-          <li class="track">
-            <div class="track-head">
-              <span class="track-title">Evolving Soundscapes</span>
-            </div>
-            <div class="player" data-peaks="demo-2">
-              <button class="play-btn" type="button" aria-label="Play Evolving Soundscapes">
-                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
-              </button>
-              <svg class="wave" role="slider" tabindex="0"
-                   aria-label="Seek within Evolving Soundscapes"
-                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
-              <span class="track-time">0:00</span>
-              <audio preload="none" src="assets/audio/demo-2.m4a"></audio>
-            </div>
-          </li>
-          <li class="track">
-            <div class="track-head">
-              <span class="track-title">Happy Accidents</span>
-            </div>
-            <div class="player" data-peaks="demo-4">
-              <button class="play-btn" type="button" aria-label="Play Happy Accidents">
-                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
-              </button>
-              <svg class="wave" role="slider" tabindex="0"
-                   aria-label="Seek within Happy Accidents"
-                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
-              <span class="track-time">0:00</span>
-              <audio preload="none" src="assets/audio/demo-4.m4a"></audio>
-            </div>
-          </li>
-          <li class="track">
-            <div class="track-head">
-              <span class="track-title">Glitches/Textures</span>
-            </div>
-            <div class="player" data-peaks="demo-1">
-              <button class="play-btn" type="button" aria-label="Play Glitches/Textures">
-                <svg class="icon-play" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0l10 6.5L1 13z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 12 13" aria-hidden="true"><path d="M1 0h3.5v13H1zM7.5 0H11v13H7.5z"/></svg>
-              </button>
-              <svg class="wave" role="slider" tabindex="0"
-                   aria-label="Seek within Glitches/Textures"
-                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                   aria-valuetext="0%" preserveAspectRatio="none"></svg>
-              <span class="track-time">0:00</span>
-              <audio preload="none" src="assets/audio/demo-1.m4a"></audio>
-            </div>
-          </li></ol>
-    </section>
-  </div>
-
-  <!-- ================= how ================= -->
-  <div class="wrap">
-    <section class="band" id="how">
-      <div class="band-head">
-        <p class="eyebrow">How it works</p>
-        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-how-narrow.svg"><img src="assets/type/h2-how-wide.svg" alt="Build your pond"></picture></h2>
-      </div>
-
-      <div class="steps">
-        <div class="step">
-          <h3>Select your sounds</h3>
-          <p>Load fish with an audio sample or one shot.</p>
-        </div>
-        <div class="step">
-          <h3>Fill the pond</h3>
-          <p>Drag fish from the palette into the pond.</p>
-        </div>
-        <div class="step">
-          <h3>The pond speaks</h3>
-          <p>Adjust the settings of the fish to your liking, and let the beauty of randomness do the rest.</p>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= fish types ================= -->
-  <div class="wrap">
-    <section class="band">
-      <div class="band-head">
-        <p class="eyebrow">Five kinds of fish</p>
-        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-types-narrow.svg"><img src="assets/type/h2-types-wide.svg" alt="Each one plays differently."></picture></h2>
-      </div>
-
-      <div class="types">
-        <div class="type">
-          <span class="art"><img src="assets/img/fish-normal-koi-1.png" alt="Normal fish" loading="lazy" decoding="sync"></span>
-          <h3>Normal</h3>
-          <p>One sample.</p>
-        </div>
-        <div class="type">
-          <span class="art"><img src="assets/img/fish-pad-betta-1.png" alt="Sustain fish" loading="lazy" decoding="sync"></span>
-          <h3>Sustain</h3>
-          <p>Loops its sample, with a crossfade control.</p>
-        </div>
-        <div class="type">
-          <span class="art"><img src="assets/img/fish-striped-tilefish-1.png" alt="Multi fish" loading="lazy" decoding="sync"></span>
-          <h3>Multi</h3>
-          <p>Swaps between multiple samples.</p>
-        </div>
-        <div class="type">
-          <span class="art"><img src="assets/img/fish-bass-purple-1.png" alt="Bass fish" loading="lazy" decoding="sync"></span>
-          <h3>Bass</h3>
-          <p>Designed for bass samples.</p>
-        </div>
-        <div class="type">
-          <span class="art"><img src="assets/img/fish-chord-rainbow-1.png" alt="Chord fish" loading="lazy" decoding="sync"></span>
-          <h3>Chord</h3>
-          <p>Plays its sample as a chord or arpeggio.</p>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= habitats ================= -->
-  <div class="wrap">
-    <section class="band" id="sound">
-      <div class="band-head">
-        <p class="eyebrow">Effects</p>
-        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-effects-narrow.svg"><img src="assets/type/h2-effects-wide.svg" alt="Color your pond"></picture></h2>
-        <p>
-          Drag and drop coral, and hear the fish adapt to the new habitat.
-        </p>
-      </div>
-
-      <div class="corals">
-          <figure>
-            <span class="art"><img src="assets/img/coral-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Reverb</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/elkhorn-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Delay</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/seagrass-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Phaser</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/brain-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Flanger</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/anemone-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Distortion</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/bubble-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Freq Shift</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/pink-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Chorus</figcaption>
-          </figure>
-          <figure>
-            <span class="art"><img src="assets/img/tube-1.png" alt="" loading="lazy" decoding="sync"></span>
-            <figcaption>Filter</figcaption>
-          </figure>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= modes ================= -->
-  <div class="wrap">
-    <section class="band" id="modes">
-      <div class="band-head">
-        <p class="eyebrow">Shizen / Nagare</p>
-        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-modes-narrow.svg"><img src="assets/type/h2-modes-wide.svg" alt="Two modes."></picture></h2>
-      </div>
-
-      <div class="modes">
-        <div class="mode">
-          <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-shizen-narrow.svg"><img src="assets/type/mode-shizen-wide.svg" alt="Shizen"></picture></h3>
-          <p class="mode-sub">let the pond speak</p>
-          <video class="mode-media" playsinline muted loop
-                 preload="none" disablepictureinpicture
-                 poster="assets/video/shizen-mode-poster.jpg"
-                 src="assets/video/shizen-mode.mp4"></video>
-        </div>
-        <div class="mode">
-          <h3><picture><source media="(max-width: 700px)" srcset="assets/type/mode-nagare-narrow.svg"><img src="assets/type/mode-nagare-wide.svg" alt="Nagare"></picture></h3>
-          <p class="mode-sub">stir the waters</p>
-          <video class="mode-media" playsinline muted loop
-                 preload="none" disablepictureinpicture
-                 poster="assets/video/nagare-mode-poster.jpg"
-                 src="assets/video/nagare-mode.mp4"></video>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= demo ================= -->
-  <div class="wrap">
-    <section class="band">
-      <div class="band-head">
-        <p class="eyebrow">In motion</p>
-        <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-demo-narrow.svg"><img src="assets/type/h2-demo-wide.svg" alt="Watch it run."></picture></h2>
-      </div>
-      <div class="demo-frame">
-        <iframe src="https://www.youtube-nocookie.com/embed/PQLJ3Vs06Y8"
-                title="Shizen: A Pond That Plays Itself"
-                loading="lazy"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= a note ================= -->
-  <div class="wrap">
-    <section class="band" id="note">
-      <p class="eyebrow">A note</p>
-      <div class="note">
-        <p>
-          Hey guys! I&rsquo;m Jayu, a producer who loves making nostalgic beats and
-          ambient music. The idea for Shizen came from chasing happy accidents, those
-          joyful moments in producing when something you didn&rsquo;t plan turns out
-          better than what you did. &ldquo;Shizen&rdquo; translates as
-          &ldquo;nature&rdquo;, but it also carries a deeper meaning. It&rsquo;s about
-          letting nature take its own course, allowing it to follow its own rhythm and
-          harmony. I think there is real beauty in embracing that randomness, and
-          it&rsquo;s the life force behind this plugin. I also really like fish LOL!
-        </p>
-        <p class="note-sign">-Jayu</p>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= buy ================= -->
-  <div class="wrap">
-    <section class="band" id="buy">
-      <div class="buy-card">
-        <p class="eyebrow">Shizen</p>
-        <p class="price">$39.99</p>
-        <p class="muted small" style="margin:6px auto 4px">One-time purchase, free updates</p>
-
-        <ul>
-          <li>VST3, AU, Standalone</li>
-          <li>macOS and Windows, 64-bit</li>
-          <li>30 factory presets</li>
-          <li>100 factory one-shots</li>
-        </ul>
-
-        <a class="btn btn-buy lemonsqueezy-button"
-           href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0">
-          Buy $39.99
+        <!-- ROOT-relative. This page is the site root now, so "shizen/" would
+           do, but "/shizen/" stays correct wherever the page is parked, and
+           it is safe because the site is served from a custom-domain apex
+           rather than a GitHub Pages project path. -->
+      <a class="channel is-live" href="/shizen/">
+          <span class="ch-art">
+            <img class="ch-layer" src="assets/img/og-card-tile.png" alt="Shizen">
+            <video class="ch-layer ch-clip" autoplay muted loop playsinline
+                   poster="assets/video/shizen-mode-poster.jpg"
+                   src="assets/video/shizen-mode-tile.mp4"></video>
+          </span>
         </a>
+
+        <!-- LeDELAY. A still of the plugin rather than a card-and-clip
+             crossfade: the tile IS the product, the way the Shizen one is,
+             and its screen is already a picture. assets/ledelay/tile.jpg is
+             a 16:10 crop of the real UI, made by tools/make-ledelay-shots.py.
+             The hover script below only animates a tile that carries a
+             .ch-clip, so this one needs nothing from it. -->
+        <a class="channel is-live" href="/ledelay/">
+          <span class="ch-art">
+            <img class="ch-layer" src="assets/ledelay/tile.jpg" alt="LeDELAY">
+          </span>
+        </a>
+
+        <div class="channel is-soon"><span class="soon">Coming soon</span></div>
+
+        <div class="channel is-soon"></div>
+        <div class="channel is-soon"></div>
+        <div class="channel is-soon"></div>
+
       </div>
-    </section>
-  </div>
+    </main>
 
-  <!-- ================= specs + faq ================= -->
-  <div class="wrap">
-    <section class="band" id="specs">
-      <div class="cols">
-        <div>
-          <p class="eyebrow">Requirements</p>
-          <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-specs-narrow.svg"><img src="assets/type/h2-specs-wide.svg" alt="What you need"></picture></h2>
-          <dl class="spec-list">
-            <dt>macOS</dt>
-            <dd>10.13 or later on Intel, 11 or later on Apple Silicon</dd>
-            <dt>Windows</dt>
-            <dd>10 or later, 64-bit</dd>
-            <dt>Formats</dt>
-            <dd>VST3, AU, Standalone</dd>
-            <dt>Hosts</dt>
-            <dd>FL Studio, Ableton Live, Logic Pro, Bitwig, Reaper, Studio One</dd>
-          </dl>
-        </div>
+    <!-- The dock. The console's bottom bar is a white plate whose top edge
+         rises at both ends, around the two buttons, and dips across the
+         middle. One path in a 1200x130 viewBox, stretched with
+         preserveAspectRatio="none" so the curve keeps its shape at any width
+         while the flat middle takes up the slack. The stroke carries
+         vector-effect="non-scaling-stroke", or that same stretch would leave
+         the line thick in the curves and thin across the middle. -->
+    <div class="dock">
+      <!-- The shoulders are FLAT until they reach the middle of the outermost
+           channel, and only then turn down - which is what the console does.
 
-        <div>
-          <p class="eyebrow">Updates</p>
-          <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-updates-narrow.svg"><img src="assets/type/h2-updates-wide.svg" alt="What has changed"></picture></h2>
+           Where that is: the menu is 1200 wide with 26px sides and a 16px gap,
+           so a tile is 275 and the first one's centre sits 163 from the menu's
+           left edge. Stretched across the viewBox by preserveAspectRatio
+           "none" that lands near x=192, and mirrored at 1008.
 
-          <!-- The current build only. The list used to run back to 2.197
-               and had fallen 47 versions behind, which is worse than not
-               having one: a stale changelog says the plugin stopped moving.
-               Kept current, it says the opposite.
+           Higher and steeper too. The dock went 196 -> 230 while the middle of
+           the curve stayed where it was on screen (y=106 of 230 is the same
+           distance up from the bottom as y=72 of 196), so the ENDS rose by the
+           difference. The rise is 88 units now against 56, and it is spent over
+           120 of run rather than 196. -->
+      <svg class="plate" viewBox="0 0 1200 230" preserveAspectRatio="none"
+           aria-hidden="true" focusable="false">
+        <defs>
+          <!-- objectBoundingBox, so it spans the plate whatever the dock does. -->
+          <!-- A touch deeper at the lip than the straight sample: the top
+               stop goes #c3c6cd -> #b9bcc5 and the ramp is pulled in slightly,
+               so the shadow under the curve reads without the lower two
+               thirds of the bar moving at all. -->
+          <linearGradient id="dockGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"    stop-color="#b9bcc5"/>
+            <stop offset="0.10" stop-color="#c9ccd3"/>
+            <stop offset="0.30" stop-color="#d8dadf"/>
+            <stop offset="1"    stop-color="#dcdee3"/>
+          </linearGradient>
+        </defs>
+        <path class="plate-fill"
+              d="M0,18 L192,18 C252,18 252,106 312,106 L888,106 C948,106 948,18 1008,18 L1200,18 L1200,230 L0,230 Z"></path>
+        <path class="plate-edge"
+              d="M0,18 L192,18 C252,18 252,106 312,106 L888,106 C948,106 948,18 1008,18 L1200,18"
+              vector-effect="non-scaling-stroke"></path>
+      </svg>
 
-               At launch there is nothing to list changes AGAINST. The Windows
-               crash and the width click were both fixed before anyone could
-               download the plugin, so describing them here would advertise
-               faults no buyer ever met - and a first release whose only note
-               is two bug fixes reads as one that shipped broken. This names
-               the release instead; real entries begin with the first build
-               after launch. -->
-          <ol class="changelog">
-            <li>
-              <span class="cl-head"><span class="cl-ver">2.247.0</span><span class="cl-date">30 Sep 2026</span></span>
-              <span class="cl-what">Launch!!!</span>
-            </li>
-          </ol>
+      <!-- Centred on the dock, straddling the curve: the time sits in the
+           light above it, the date in the grey below. -->
+      <div class="clock">
+        <h1 class="wordmark">Jayu</h1>
+
+        <div class="socials">
+          <a class="social" href="https://www.youtube.com/@JayuBeats"
+             target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23.5 12 31 31 0 0 0 23 7.5zM9.8 15.3V8.7l5.7 3.3z"></path>
+            </svg>
+          </a>
+          <a class="social" href="https://www.instagram.com/prodjayu/"
+             target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
+              <circle cx="12" cy="12" r="4.1"></circle>
+              <circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"></circle>
+            </svg>
+          </a>
+          <a class="social" href="mailto:prodjayu@gmail.com"
+             aria-label="Email" title="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect>
+              <path d="M3 7l9 6 9-6"></path>
+            </svg>
+          </a>
         </div>
       </div>
-    </section>
-  </div>
 
-  <!-- ================= contact ================= -->
-  <div class="wrap">
-    <section class="band" id="contact">
-      <p class="eyebrow">Contact</p>
-      <h2><picture><source media="(max-width: 700px)" srcset="assets/type/h2-contact-narrow.svg"><img src="assets/type/h2-contact-wide.svg" alt="Say hello"></picture></h2>
-      <p class="contact-line">
-        Questions, license trouble, or just want to show me what you made with it:
-        <a class="contact-mail" href="mailto:prodjayu@gmail.com">prodjayu@gmail.com</a>
-      </p>
+      <div class="dock-row">
+        <button class="dock-item" id="beats-open" type="button" aria-haspopup="dialog">
+          <span class="knob is-home">
+            <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20 3.5v10.9a3.1 3.1 0 1 1-1.8-2.83V7.2l-7.4 1.62v8.08a3.1 3.1 0 1 1-1.8-2.83V6.1z"></path>
+            </svg>
+          </span>
+          <span class="dock-label">Beats</span>
+        </button>
 
-      <!-- A subsection rather than its own band: someone reading this is
-           already deciding whether to email, and the address is two lines up. -->
-      <h3 class="sub-h">Refunds</h3>
-      <p class="contact-line refund-line">
-        If Shizen won&rsquo;t run properly on a <a href="#specs">supported system</a>
-        and we can&rsquo;t fix it between us, I&rsquo;ll refund you. Any other
-        request, I&rsquo;ll review personally.
-      </p>
-      <p class="contact-line refund-line">
-        Either way, email me at
-        <a class="contact-mail" href="mailto:prodjayu@gmail.com">prodjayu@gmail.com</a>
-        with your order number and what went wrong.
-      </p>
+        <button class="dock-item" id="about-open" type="button" aria-haspopup="dialog">
+          <span class="dock-label">About me</span>
+          <span class="knob">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <circle cx="9" cy="10.2" r="1.15" fill="currentColor" stroke="none"></circle>
+              <circle cx="15" cy="10.2" r="1.15" fill="currentColor" stroke="none"></circle>
+              <path d="M8.1 14.3c1 1.3 2.3 2 3.9 2s2.9-.7 3.9-2"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
 
-      <!-- There is no trial build, so a first visit often ends in "later" -
-           and later needs somewhere to land, or the visitor is gone for
-           good. Hidden until an endpoint is configured; see the foot of the
-           page. -->
-      <form class="signup" id="signup" method="post" target="_blank" rel="noopener" hidden>
-        <label class="signup-label" for="signup-email">
-          Or get an email when Shizen updates &mdash; new fish, new effects, nothing else.
-        </label>
-        <div class="signup-row">
-          <input class="signup-input" id="signup-email" type="email" name="email"
-                 placeholder="you@example.com" autocomplete="email" required>
-          <button class="btn signup-btn" type="submit">Keep me posted</button>
+  <!-- The beats dialog. Modelled on the console's system dialog rather than on
+       the dark list it replaces: a black panel in the middle of this shell
+       would read as a different application having opened. -->
+  <div class="sheet-back" id="beats-back" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="beats-title">
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title" id="beats-title">Beats</div>
+          <div class="sheet-sub">Play, download, or buy a lease</div>
         </div>
-        <p class="signup-note">No spam, and one click to leave.</p>
-      </form>
-    </section>
+        <button class="sheet-close" id="beats-close" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- The BeatStars Blaze player, store 153047.
+           Nothing on this page can read or drive it - cross-origin iframe -
+           which is exactly why the dock player was removed rather than kept
+           alongside it.
+           The supplied embed's width/height/max-width are dropped: the CSS
+           gives the iframe the whole body so it scrolls its OWN document
+           rather than being scrolled by ours, which is what avoids two
+           scrollbars inside one another. -->
+      <div class="sheet-body" id="beats-body">
+        <iframe class="store-frame" src="https://player.beatstars.com/?storeId=153047"
+                title="Jayu beat store" loading="lazy"></iframe>
+      </div>
+    </div>
   </div>
-</main>
+  <div class="sheet-back" id="about-back" hidden>
+    <div class="sheet is-letter" role="dialog" aria-modal="true" aria-labelledby="about-title">
+      <div class="letter-head" id="about-title">About me</div>
+      <div class="letter-body">
+        <div class="letter-from">
+          <span class="letter-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <circle cx="9" cy="10.2" r="1.15" fill="currentColor" stroke="none"></circle>
+              <circle cx="15" cy="10.2" r="1.15" fill="currentColor" stroke="none"></circle>
+              <path d="M8.1 14.3c1 1.3 2.3 2 3.9 2s2.9-.7 3.9-2"></path>
+            </svg>
+          </span>
+          <span class="letter-name">Jayu</span>
+        </div>
 
-<div class="wrap">
-  <footer class="site-foot">
-    <span class="foot-left">
-      © <span id="year">2026</span> Jayu Sounds
-      <a class="foot-social" href="https://www.instagram.com/prodjayu/"
-         target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="3" width="18" height="18" rx="5.2"></rect>
-          <circle cx="12" cy="12" r="4.1"></circle>
-          <circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"></circle>
-        </svg>
-      </a>
-      <a class="foot-social" href="https://www.youtube.com/@jayusounds"
-         target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23.5 12 31 31 0 0 0 23 7.5zM9.8 15.3V8.7l5.7 3.3z"></path>
-        </svg>
-      </a>
-    </span>
-    <span>
-      <a href="#contact">Contact</a> ·
-      <a href="#buy">Buy</a>
-    </span>
-  </footer>
+        <!-- WRITE THE ABOUT HERE. The rules are drawn behind this block, so
+             keep paragraphs as <p> and they stay sitting on the lines. -->
+        <div class="letter-text">
+          <p>Write your about me here.</p>
+          <p>The lines behind this are drawn by the page rather than being an
+             image, so however much you write, the paper grows with it.</p>
+        </div>
+      </div>
+      <div class="letter-foot">
+        <button class="letter-btn" id="about-close" type="button">Back</button>
+      </div>
+    </div>
+  </div>
+
+    <div class="crt" aria-hidden="true"></div>
+  </div>
 </div>
 
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+// Hover holds the channel on the clip.
+//
+// In script rather than CSS: while tileCross is running it wins over any
+// plain opacity declaration, and pausing an animation does not release the
+// value it is holding - so the animation has to come off and go back on.
+// Removing it lets the element's own opacity:0 apply, and the transition
+// carries it to 1; leaving reverses that and only re-arms the loop once the
+// fade has finished, so the card does not snap back.
+[].forEach.call(document.querySelectorAll('.channel.is-live'), function (ch) {
+  var clip = ch.querySelector('.ch-clip');
+  if (! clip) return;             // a still tile: nothing to hold
 
-<!-- Lemon Squeezy overlay checkout. Any link carrying .lemonsqueezy-button
-     and ?embed=1 opens in a modal rather than navigating away. -->
-<script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+  var timer = null;
 
-<!-- The one purchase-funnel signal this page CAN see.
-     Checkout itself happens in Lemon Squeezy's overlay, on their domain, so
-     Purchase never reaches this pixel - it has to come from their own Meta
-     integration. InitiateCheckout is the last event on our side of that
-     boundary, and it is the one that separates "traffic arrived" from
-     "traffic wanted it".
+  function hold() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    clip.style.animation = 'none';
+    // Read back before setting, or the browser folds removing the animation
+    // and setting opacity into one style pass and there is nothing to
+    // transition FROM.
+    void clip.offsetWidth;
+    clip.style.opacity = '1';
+  }
 
-     Delegated on document rather than bound per button: there are two buy
-     links, and a listener on each is two things to keep in step. -->
-<script>
-document.addEventListener('click', function (e) {
-  var a = e.target && e.target.closest && e.target.closest('.lemonsqueezy-button');
-  if (! a || typeof window.fbq !== 'function') return;
-  window.fbq('track', 'InitiateCheckout', {
-    content_name: 'Shizen',
-    value: 39.99,
-    currency: 'USD'
-  });
+  function release() {
+    clip.style.opacity = '0';
+    timer = setTimeout(function () {
+      clip.style.animation = '';
+      clip.style.opacity = '';
+      timer = null;
+    }, 1050);                      // just past the 1s transition
+  }
+
+  ch.addEventListener('mouseenter', hold);
+  ch.addEventListener('mouseleave', release);
+  ch.addEventListener('focus', hold);
+  ch.addEventListener('blur', release);
 });
-</script>
 
-<!-- Which channel the visit came from, carried through to the one place a
-     purchase is actually visible.
+// Both dialogs, one controller. They differ only in which three elements
+// they are made of, so the behaviour - Escape, backdrop-only dismissal,
+// focus out and back - is written once rather than twice.
+//
+// What is INSIDE the beats sheet is a cross-origin iframe this page cannot
+// read or drive, which is why the dock player was removed rather than kept
+// alongside it. The letter is ordinary markup.
+(function () {
+  function wire(openId, backId, closeId) {
+    var back = document.getElementById(backId);
+    var openBtn = document.getElementById(openId);
+    var closeBtn = document.getElementById(closeId);
+    if (! back || ! openBtn || ! closeBtn) return;
 
-     The pixel cannot see a purchase: checkout happens in Lemon Squeezy's
-     overlay, on their origin. What DOES survive that boundary is the
-     discount code on the order, so an ad link carrying ?src=ig swaps the
-     buy link's code - or adds one, now that the launch offer is over and
-     the links carry none - for an ads-only code. Every order in
-     Lemon Squeezy bearing REELS10 came from the ads, and the buyer types
-     nothing.
+    var lastFocus = null;
 
-     Add a row to CODES per channel; anything not listed pays full price. -->
-<script>
-(function adSource() {
-  var CODES = { ig: 'REELS10' };        /* ?src= value -> LS discount code */
-  var KEY = 'shizen-src';
+    function onKey(e) { if (e.key === 'Escape') close(); }
 
-  var src = null;
-  try {
-    src = new URLSearchParams(location.search).get('src');
-    /* Held for the session: they may reload, or wander off and come back to
-       the tab before buying, and the code has to still be the ad's. */
-    if (src && CODES[src]) sessionStorage.setItem(KEY, src);
-    else src = sessionStorage.getItem(KEY);
-  } catch (e) { /* private mode - fall through to the public code */ }
-
-  var code = src && CODES[src];
-  if (! code) return;
-
-  [].forEach.call(document.querySelectorAll('.lemonsqueezy-button'), function (a) {
-    /* The href is written percent-encoded; a browser may hand it back
-       either way, so match both spellings of the brackets.
-
-       v2.249.0: APPEND when there is no code to replace. With the launch
-       offer over the buy links carry no discount at all, and a replace that
-       matches nothing fails silently - the swap would look wired up and do
-       nothing, which is the same trap as a code that does not exist. */
-    var re = /([?&]checkout(?:%5B|\[)discount_code(?:%5D|\])=)[^&]*/;
-    a.href = re.test(a.href)
-      ? a.href.replace(re, '$1' + code)
-      : a.href + '&checkout%5Bdiscount_code%5D=' + code;
-  });
-})();
-</script>
-
-<!-- Mailing list endpoint. Paste the form action from whichever provider you
-     use and the form in #contact un-hides itself. Leave it empty and the
-     form never appears, so the page cannot take an address it has nowhere
-     to put.
-
-       Buttondown   https://buttondown.email/api/emails/embed-subscribe/USERNAME
-       ConvertKit   https://app.convertkit.com/forms/FORMID/subscriptions
-       Mailchimp    https://LIST.us21.list-manage.com/subscribe/post?u=...&id=...
-
-     It posts straight to the provider rather than through fetch: no CORS to
-     satisfy, and their page owns the confirmation and the double opt-in.
-     target="_blank" leaves this page open behind it. -->
-<script>
-(function newsletter() {
-  var ENDPOINT = '';                    /* <- paste it here */
-
-  var form = document.getElementById('signup');
-  if (! form || ! ENDPOINT) return;
-  form.action = ENDPOINT;
-  form.hidden = false;
-})();
-</script>
-
-<script>
-  // v2.233.0: the demo players.
-  //
-  // A drawn waveform rather than the native control, filling in as it plays.
-  // The <audio> element is still what plays - hidden, but doing the decoding,
-  // buffering and media-session work - so nothing here reimplements playback.
-  //
-  // The peaks are computed offline by tools/make-waveforms.py and inlined,
-  // 96 bars a track and under 3KB for all five. Drawing them in the browser
-  // would mean fetching and decoding every file on load, which is exactly what
-  // preload="none" is there to avoid: the waveform is on screen before a byte
-  // of audio is asked for.
-  (function demoPlayers() {
-    var PEAKS = {"demo-1":[1.0,0.329,0.251,0.99,0.948,0.475,0.61,0.615,0.31,0.421,0.353,0.094,0.385,0.296,0.916,0.692,0.612,0.999,0.852,0.918,0.716,0.512,0.535,0.48,0.916,0.202,0.479,0.313,0.379,0.313,0.976,0.701,0.626,0.423,0.319,0.176,0.14,0.919,0.684,0.792,0.514,0.47,0.691,0.872,0.577,0.75,0.447,0.766,0.365,0.477,0.164,0.951,0.352,0.444,0.97,1.0,0.492,0.838,0.975,0.523,0.894,0.443,0.484,0.54,0.625,0.594,0.413,0.135,0.3,0.218,0.389,0.215,0.14,0.353,0.124,0.344,0.264,0.864,0.361,0.093,0.42,0.406,0.486,0.496,0.74,0.474,0.42,0.471,0.348,0.997,0.754,0.99,0.5,0.995,0.693,0.196],"demo-2":[0.431,0.489,0.527,0.613,0.65,0.75,0.679,0.686,0.736,0.729,0.635,0.655,0.714,0.77,0.87,0.602,0.639,0.63,0.615,0.663,0.778,0.799,0.884,0.801,0.93,0.901,0.908,0.756,0.718,0.749,0.809,0.73,0.733,0.816,1.0,0.823,0.838,0.765,0.805,0.809,0.928,0.818,0.697,0.644,0.634,0.677,0.708,0.751,0.671,0.629,0.577,0.523,0.594,0.721,0.633,0.659,0.667,0.678,0.698,0.675,0.749,0.801,0.757,0.807,0.77,0.718,0.67,0.586,0.676,0.655,0.74,0.672,0.562,0.579,0.46,0.497,0.538,0.575,0.552,0.562,0.495,0.501,0.4,0.397,0.418,0.356,0.278,0.227,0.2,0.144,0.091,0.069,0.047,0.027,0.011,0.003],"demo-3":[0.384,0.426,0.488,0.571,0.489,0.652,0.711,0.562,0.667,0.506,0.496,0.424,0.452,0.367,0.457,0.523,0.468,0.479,0.573,0.631,0.606,0.709,0.622,0.624,0.506,0.592,0.617,0.519,0.561,0.525,0.645,0.69,0.884,0.818,0.865,0.722,0.717,0.686,0.654,0.6,0.712,0.747,0.772,0.783,0.758,0.825,0.809,0.772,0.828,0.805,0.783,0.695,0.915,0.734,0.947,0.92,0.718,0.921,0.76,0.95,0.863,0.831,0.842,1.0,0.755,0.8,0.724,0.745,0.935,0.991,0.877,0.92,0.889,0.837,0.783,0.673,0.636,0.605,0.644,0.436,0.496,0.495,0.513,0.418,0.445,0.342,0.377,0.267,0.235,0.19,0.147,0.099,0.06,0.044,0.018,0.004],"demo-4":[0.035,0.133,0.169,0.403,0.45,0.631,0.866,0.889,0.899,0.729,0.863,0.853,1.0,0.69,0.526,0.727,0.618,0.606,0.382,0.412,0.4,0.362,0.429,0.338,0.362,0.323,0.257,0.293,0.448,0.81,0.586,0.417,0.799,0.569,0.622,0.59,0.885,0.761,0.734,0.796,0.798,0.833,0.746,0.548,0.656,0.522,0.612,0.595,0.529,0.515,0.451,0.419,0.403,0.643,0.691,0.636,0.434,0.499,0.459,0.502,0.585,0.602,0.656,0.584,0.603,0.723,0.628,0.525,0.559,0.626,0.612,0.59,0.701,0.616,0.714,0.566,0.542,0.42,0.515,0.515,0.416,0.314,0.219,0.236,0.209,0.222,0.12,0.058,0.064,0.051,0.044,0.031,0.016,0.013,0.005,0.001],"demo-5":[0.459,0.549,0.64,0.51,0.617,0.726,0.588,0.624,0.693,0.738,0.716,0.627,0.691,0.637,0.665,0.632,0.597,0.698,0.637,0.682,0.622,0.655,0.563,0.476,0.469,0.4,0.476,0.504,0.56,0.644,0.711,0.668,0.933,0.789,0.731,0.89,0.837,0.834,0.697,0.718,0.745,0.499,0.563,0.654,0.505,0.477,0.589,0.486,0.604,0.63,0.652,0.599,0.716,0.576,0.611,0.574,0.673,0.772,0.589,0.739,0.669,0.675,0.603,0.548,0.621,0.656,0.643,0.722,0.614,0.855,0.536,0.461,0.485,0.495,0.559,0.555,0.607,0.641,0.615,0.798,0.903,1.0,0.842,0.753,0.886,0.868,0.944,0.729,0.681,0.592,0.648,0.628,0.618,0.589,0.541,0.506]};
-
-    var players = [].slice.call(document.querySelectorAll('.player[data-peaks]'));
-    if (! players.length) return;
-
-    var SVG = 'http://www.w3.org/2000/svg';
-
-    function fmt(t) {
-      if (! isFinite(t) || t < 0) t = 0;
-      var m = Math.floor(t / 60), s = Math.floor(t % 60);
-      return m + ':' + (s < 10 ? '0' : '') + s;
+    function open() {
+      lastFocus = document.activeElement;
+      back.hidden = false;
+      closeBtn.focus();
+      document.addEventListener('keydown', onKey);
     }
 
-    players.forEach(function (player) {
-      var peaks = PEAKS[player.getAttribute('data-peaks')];
-      if (! peaks) return;
-
-      var track = player.closest('.track');
-      var audio = player.querySelector('audio');
-      var btn   = player.querySelector('.play-btn');
-      var wave  = player.querySelector('.wave');
-      var time  = player.querySelector('.track-time');
-
-      // A viewBox in bar units, with preserveAspectRatio="none" on the
-      // element, so the drawing stretches to whatever width the column is
-      // without measuring anything or listening for resizes.
-      var BAR = 3, GAP = 1, H = 100;
-      var W = peaks.length * (BAR + GAP);
-      wave.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-
-      function bars(cls) {
-        var g = document.createElementNS(SVG, 'g');
-        if (cls) g.setAttribute('class', cls);
-        peaks.forEach(function (v, i) {
-          // A floor of 2 units: a silent passage should still read as part of
-          // the track rather than as a gap in it.
-          var h = Math.max(2, v * H);
-          var r = document.createElementNS(SVG, 'rect');
-          r.setAttribute('x', i * (BAR + GAP));
-          r.setAttribute('y', (H - h) / 2);
-          r.setAttribute('width', BAR);
-          r.setAttribute('height', h);
-          r.setAttribute('rx', 1);
-          g.appendChild(r);
-        });
-        return g;
-      }
-
-      // Two copies of the same bars: the pale one underneath, the ink one
-      // clipped to how far in we are. Clipping one number per timeupdate is
-      // cheaper than restyling 160 rects, and it fills mid-bar rather than
-      // snapping bar to bar.
-      var clipId = 'played-' + player.getAttribute('data-peaks');
-      var defs = document.createElementNS(SVG, 'defs');
-      var clip = document.createElementNS(SVG, 'clipPath');
-      clip.setAttribute('id', clipId);
-      var clipRect = document.createElementNS(SVG, 'rect');
-      clipRect.setAttribute('x', 0); clipRect.setAttribute('y', 0);
-      clipRect.setAttribute('width', 0); clipRect.setAttribute('height', H);
-      clip.appendChild(clipRect); defs.appendChild(clip); wave.appendChild(defs);
-
-      wave.appendChild(bars(null));
-      var played = bars('played');
-      played.setAttribute('clip-path', 'url(#' + clipId + ')');
-      wave.appendChild(played);
-
-      function progress() {
-        var d = audio.duration;
-        return (isFinite(d) && d > 0) ? (audio.currentTime / d) : 0;
-      }
-
-      function paint() {
-        var f = progress();
-        clipRect.setAttribute('width', f * W);
-        wave.setAttribute('aria-valuenow', Math.round(f * 100));
-        wave.setAttribute('aria-valuetext', Math.round(f * 100) + '%');
-        time.textContent = fmt(audio.currentTime) +
-          (isFinite(audio.duration) ? ' / ' + fmt(audio.duration) : '');
-      }
-
-      function seekTo(fraction) {
-        if (! isFinite(audio.duration) || audio.duration <= 0) return;
-        audio.currentTime = Math.max(0, Math.min(1, fraction)) * audio.duration;
-        paint();
-      }
-
-      btn.addEventListener('click', function () {
-        if (audio.paused) {
-          // One at a time. Two ponds at once is noise, not a comparison.
-          players.forEach(function (other) {
-            if (other !== player) other.querySelector('audio').pause();
-          });
-          audio.play().catch(function () {});
-        } else {
-          audio.pause();
-        }
-      });
-
-      // The button's label has to follow what it will DO next, and name the
-      // track while doing it. It read "Pause demo-1" before - the data
-      // attribute rather than the title - and never went back to "Play".
-      var titleEl = track.querySelector('.track-title');
-      var title = titleEl ? titleEl.textContent.trim() : '';
-
-      audio.addEventListener('play',  function () {
-        track.classList.add('is-playing');
-        btn.setAttribute('aria-label', 'Pause ' + title);
-      });
-      audio.addEventListener('pause', function () {
-        track.classList.remove('is-playing');
-        btn.setAttribute('aria-label', 'Play ' + title);
-      });
-      audio.addEventListener('ended', function () {
-        track.classList.remove('is-playing');
-        btn.setAttribute('aria-label', 'Play ' + title);
-        audio.currentTime = 0;
-        paint();
-      });
-      audio.addEventListener('timeupdate', paint);
-      // Scrubbing while PAUSED does not reliably raise timeupdate; seeked does.
-      audio.addEventListener('seeked', paint);
-      audio.addEventListener('loadedmetadata', paint);
-
-      // Pointer scrubbing, press through release, on the element itself so a
-      // drag that leaves the waveform still tracks.
-      var scrubbing = false;
-      function fractionFromEvent(e) {
-        var r = wave.getBoundingClientRect();
-        return r.width ? (e.clientX - r.left) / r.width : 0;
-      }
-      wave.addEventListener('pointerdown', function (e) {
-        scrubbing = true;
-        // Capture is a nicety - it keeps a drag tracking after the pointer
-        // leaves the box. It throws for a pointer the element never saw, so
-        // losing it must not take the seek with it.
-        try { wave.setPointerCapture(e.pointerId); } catch (err) {}
-        seekTo(fractionFromEvent(e));
-      });
-      wave.addEventListener('pointermove', function (e) {
-        if (scrubbing) seekTo(fractionFromEvent(e));
-      });
-      wave.addEventListener('pointerup', function () { scrubbing = false; });
-
-      // The native control came with a keyboard for free; replacing it means
-      // putting one back. Arrows nudge, Home/End jump, space toggles.
-      wave.addEventListener('keydown', function (e) {
-        var d = audio.duration;
-        if (! isFinite(d)) return;
-        var step = e.shiftKey ? 10 : 5;
-        if (e.key === 'ArrowRight')      seekTo((audio.currentTime + step) / d);
-        else if (e.key === 'ArrowLeft')  seekTo((audio.currentTime - step) / d);
-        else if (e.key === 'Home')       seekTo(0);
-        else if (e.key === 'End')        seekTo(1);
-        else if (e.key === ' ' || e.key === 'Enter') btn.click();
-        else return;
-        e.preventDefault();
-      });
-
-      paint();
-    });
-  })();
-
-  // The mode demos behave like GIFs: no controls, looping, and started only
-  // when they are actually on screen. preload="none" means nothing is
-  // fetched until play() is called, so scrolling past is free.
-  //
-  // Paused on the way out as well - two clips decoding forever in a
-  // background tab is work nobody asked for.
-  (function modeDemos() {
-    // The hero clip loops on the same terms as the mode demos: started when
-      // it is on screen, paused when it is not.
-      var vids = [].slice.call(
-        document.querySelectorAll('video.mode-media, video.hero-clip'));
-    if (! vids.length) return;
-
-    if (! ('IntersectionObserver' in window)) {
-      vids.forEach(function (v) { v.play().catch(function () {}); });
-      return;
+    function close() {
+      back.hidden = true;
+      document.removeEventListener('keydown', onKey);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
 
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        var v = e.target;
-        if (e.isIntersecting) v.play().catch(function () {});
-        else v.pause();
-      });
-    }, { threshold: 0.25 });
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
 
-    vids.forEach(function (v) { io.observe(v); });
-  })();
+    // Backdrop only, and only a click that STARTED there - a drag out of the
+    // sheet must not dismiss it.
+    back.addEventListener('click', function (e) { if (e.target === back) close(); });
+  }
+
+  wire('beats-open', 'beats-back', 'beats-close');
+  wire('about-open', 'about-back', 'about-close');
+})();
+
 </script>
+
 </body>
 </html>
