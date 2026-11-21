@@ -381,11 +381,18 @@ body {
   padding: clamp(18px, 3vh, 30px) 26px calc(var(--dock-h) + 26px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Scrolls when the tiles do not fit above the dock - with two products
+     that happens on a tablet held upright. The centring is the grid's own
+     margin:auto rather than justify-content:center, because a centred flex
+     child that overflows loses its TOP past the edge, where no scroll can
+     reach it. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .grid {
   width: 100%;
+  margin-block: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
