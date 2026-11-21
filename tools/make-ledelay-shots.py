@@ -15,9 +15,6 @@ build the harness once, into a temp dir) and Pillow.
 What it makes, under assets/ledelay/:
     hero.jpg         the whole screen, preset Alley-Oop, the 2020s jersey (1600 wide)
     tile.jpg         a 16:10 crop of the same, for the channel menu (1100 wide)
-    era-2000s.jpg    the Echo King alone, one per era (640 wide)
-    era-2010s.jpg
-    era-2020s.jpg
     og-card-v1.png   the 1200x630 share card, from tools/og-card-ledelay.html
 
 HOW THE SNAPSHOT IS TAKEN
@@ -78,18 +75,13 @@ def fit(im, width):
     return im.resize((width, round(width * im.height / im.width)), Image.LANCZOS)
 
 os.makedirs(OUT, exist_ok=True)
-shots = {era: snap(UI, court_js(era), os.path.join(work, f"{era}.png"), W, H) for era in ("2000s", "2010s", "2020s")}
-box = frame(shots["2020s"])
-screens = {era: im.crop(box) for era, im in shots.items()}
-
-hero = screens["2020s"]
+# One era is enough for the page as it stands; court_js takes any of the
+# three, which is how the era portraits were made when the page had them.
+shot = snap(UI, court_js("2020s"), os.path.join(work, "2020s.png"), W, H)
+hero = shot.crop(frame(shot))
 fit(hero, 1600).save(os.path.join(OUT, "hero.jpg"), quality=86, optimize=True, progressive=True)
 w, h = hero.size; th = round(w * 10 / 16); y0 = (h - th) // 2
 fit(hero.crop((0, y0, w, y0 + th)), 1100).save(os.path.join(OUT, "tile.jpg"), quality=84, optimize=True)
-for era, im in screens.items():
-    w, h = im.size; cx = w * 0.515
-    crop = im.crop((int(cx - w * 0.20), int(h * 0.10), int(cx + w * 0.20), int(h * 0.78)))
-    fit(crop, 640).save(os.path.join(OUT, f"era-{era}.jpg"), quality=86, optimize=True)
 
 # the share card, from the hero just written
 card = snap(os.path.join(HERE, "og-card-ledelay.html"), "document.fonts.status", os.path.join(work, "og.png"), 1200, 630, wait=2)

@@ -4,6 +4,24 @@ The whole site, served by GitHub Pages from this repo's `main` at the custom
 domain in `CNAME`. Static pages: no build step, no dependencies, no framework.
 Open the HTML and what you see is what deploys, a minute or so after a push.
 
+**Two branches.** `main` is what is live. `dev` is the site as it is becoming:
+the channel menu at the root, Shizen under `/shizen/`, LeDELAY under
+`/ledelay/`. Until the day it goes live, `main` holds the Shizen-only page it
+has shown since launch, so nothing below describes what jayusounds.com shows
+today; it describes `dev`. `main` was put back to that page with a plain
+commit rather than rewound, so going live is a tree copy, not a merge:
+
+```sh
+git checkout main
+git read-tree -m -u dev        # main's files become dev's, deletions included
+git commit -m "The new site goes live"
+git push
+```
+
+To preview `dev`, serve the checkout from its root (`python3 -m http.server`
+in it): the menu's `/shizen/` and `/ledelay/` links are root-relative and do
+not resolve from a file:// open.
+
 ```
 index.html            the channel menu - the homepage: one tile per product
 shizen/index.html     Shizen, a generative sampler
@@ -49,8 +67,11 @@ plugin's own two faces.
 plugin's `ui/index.html` (from `~/Developer/LeDELAY`, or the path you pass)
 in an offscreen WebKit view, injects the Alley-Oop preset, drives the court
 a few frames into a dribble, and snapshots it at 2x. It writes the hero, the
-menu tile, the three era portraits and the share card. Re-run it after any
-change to the plugin's art; nothing is drawn by hand. The harness is
+menu tile and the share card. Re-run it after any change to the plugin's
+art; nothing is drawn by hand. (The page is deliberately short: hero, the
+two bags, how the handles play, requirements, contact. The effects, era,
+build-him and preset bands were written and cut on 20 Nov 2026; the era
+portraits came out of the same script and can come back.) The harness is
 `tools/uiprobe.swift`; the script builds it into a temp dir.
 
 **Beaver Punch is served as a webfont.** Its author's terms: "100% free ...
