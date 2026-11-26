@@ -174,6 +174,10 @@ p { margin: 0 0 1em; max-width: var(--measure); }
   background: var(--card); border: 1.5px solid var(--card-line); border-radius: 10px;
   padding: 22px 22px 16px;
 }
+.card-gif {
+  display: block; width: min(100%, 300px); margin: 0 auto 18px;
+  border-radius: 8px; border: 1.5px solid var(--card-line);
+}
 .card p { font-size: 0.98rem; }
 .card ul { margin: 0 0 8px; padding-left: 20px; font-size: 0.95rem; color: var(--text-soft); }
 .card li { margin-bottom: 4px; }
@@ -303,6 +307,8 @@ fbq('track', 'PageView');
       </div>
       <div class="cards two">
         <div class="card">
+          <img class="card-gif" src="../assets/ledelay/basic-dribble.gif" width="420" height="422" loading="lazy"
+               alt="The Echo King dribbling one ball, a steady bounce every quarter note.">
           <h3>BASIC</h3>
           <p>A normal delay, done properly.</p>
           <ul>
@@ -312,6 +318,8 @@ fbq('track', 'PageView');
           </ul>
         </div>
         <div class="card">
+          <img class="card-gif" src="../assets/ledelay/deep-dribble.gif" width="420" height="422" loading="lazy"
+               alt="The Echo King dribbling two balls at once, each on its own syncopated pattern.">
           <h3>DEEP</h3>
           <p>The multi-tap. The repeats are a pattern you draw, the LeHANDLES.</p>
           <ul>
