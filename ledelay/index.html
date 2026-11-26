@@ -180,17 +180,9 @@ p { margin: 0 0 1em; max-width: var(--measure); }
 }
 .card p { font-size: 0.98rem; }
 
-/* the steps: numbered the way the plugin counts its bar */
-.steps { counter-reset: step; display: grid; gap: 18px; }
-@media (min-width: 760px) { .steps { grid-template-columns: 1fr 1fr 1fr; } }
-.step { counter-increment: step; position: relative; padding-top: 6px; }
-.step::before {
-  content: counter(step);
-  display: inline-block; font-family: var(--display); font-size: 30px; color: var(--orange);
-  -webkit-text-stroke: 0.04em var(--ink); paint-order: stroke fill; text-shadow: 0.06em 0.06em 0 var(--ink);
-  margin-bottom: 6px;
-}
-.key { display: inline-block; font: 600 0.8em/1 var(--body); padding: 4px 7px 3px; border: 1.5px solid var(--card-line); border-bottom-width: 3px; border-radius: 5px; color: var(--cream); background: rgba(10,14,24,0.5); vertical-align: 1px; }
+/* the editor demo: a screen like the hero's, the clip filling it */
+.demo { aspect-ratio: 1072 / 652; max-width: 980px; margin: 0 auto; }
+.demo-clip { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--ink); }
 
 
 
@@ -258,7 +250,7 @@ fbq('track', 'PageView');
   <header class="site-head">
     <a class="wordmark" href="/"><span>LeDELAY</span> <small>Jayu Sounds</small></a>
     <nav class="nav">
-      <a href="#how" class="hide-sm">How it plays</a>
+      <a href="#how" class="hide-sm">The editor</a>
       <a href="#specs" class="hide-sm">Requirements</a>
       <a href="#buy">Get it</a>
     </nav>
@@ -324,21 +316,23 @@ fbq('track', 'PageView');
     <section class="band" id="how">
       <div class="band-head">
         <p class="eyebrow">LeHANDLES</p>
-        <h2>How it plays.</h2>
+        <h2>An intuitive way to control your delay.</h2>
+        <p class="soft">
+          Click the pattern in. Open the editor. Give every dribble its own level, pan and pitch.
+        </p>
       </div>
-      <div class="steps">
-        <div class="step">
-          <h3>Drop handles</h3>
-          <p>Click the bar to add a repeat. Drag up for louder, sideways to move it, double-click to take it off. Scroll to zoom in for finer placing, and <span class="le">Le</span> QUANTIZE snaps to the grid or not.</p>
-        </div>
-        <div class="step">
-          <h3>Or dribble it in</h3>
-          <p>Hit <span class="key">REC</span>, then <span class="key">Space</span> on every bounce you want. The bar loops once, the handles land where you played them, and <span class="key">Shift</span> drops a soft one.</p>
-        </div>
-        <div class="step">
-          <h3>Edit every bounce</h3>
-          <p><span class="key">EDIT</span> opens the editor: an FL-style lane where you paint each handle's Level, Pan, Drive, Pitch (&plusmn;12 semitones) and the amount of each effect, with the shared settings a click away.</p>
-        </div>
+      <!-- TODO record the clip: clicking a pattern into the bar, EDIT, then
+           adjusting Pan, Level and Pitch in the editor. Export it muted,
+           1600 px wide or so, H.264 mp4, and drop it at
+           assets/ledelay/handles-demo.mp4 with a first frame saved as
+           assets/ledelay/handles-demo.jpg. Until the mp4 exists the poster
+           shows on its own. -->
+      <div class="screen demo">
+        <video class="demo-clip" playsinline muted loop
+               preload="metadata" disablepictureinpicture
+               poster="../assets/ledelay/handles-demo.jpg"
+               src="../assets/ledelay/handles-demo.mp4"
+               aria-label="Clicking a delay pattern into the LeHANDLES bar, then setting each handle's pan, level and pitch in the editor."></video>
       </div>
     </section>
   </div>
@@ -441,5 +435,20 @@ fbq('track', 'PageView');
 </script>
 <!-- The Echo King is a parody mascot. No real player's name, no team names
      or logos, anywhere on this page - team colours only. -->
+<script>
+  // The demo clip plays while it is on screen and pauses off it: a looping
+  // video in a background tab is work nobody asked for.
+  (function demoClip() {
+    var v = document.querySelector('video.demo-clip');
+    if (! v) return;
+    if (! ('IntersectionObserver' in window)) { v.play().catch(function () {}); return; }
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) v.play().catch(function () {});
+        else v.pause();
+      });
+    }, { threshold: 0.25 }).observe(v);
+  })();
+</script>
 </body>
 </html>
