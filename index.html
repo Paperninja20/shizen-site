@@ -844,6 +844,16 @@ fbq('track', 'PageView');
           for itself.
         </p>
 
+        <!-- BLACK FRIDAY 2026: $19.99 until the end of Monday Nov 30, Pacific.
+             The price itself is lowered on the PRODUCT in Lemon Squeezy, not
+             by a code, so the links are unchanged and somebody has to put
+             the product back to $39.99 by hand when it ends. The page does
+             not wait for that: the script beside the pixel below strips
+             every [data-sale] element and rewrites every [data-price] the
+             moment the deadline passes, so it never advertises a sale that
+             is over - see saleWindow(). Once it has ended, delete these
+             elements for real. -->
+        <p class="launch-note" data-sale>Black Friday sale &middot; <span data-sale-left>ends Monday at midnight PT</span></p>
         <div class="cta-row">
           <!-- The live Lemon Squeezy checkout. `?embed=1`, plus lemon.js at
                the foot of the page, opens it as an overlay rather than
@@ -853,7 +863,7 @@ fbq('track', 'PageView');
                opens at a different number than the one that was clicked. -->
           <a class="btn btn-buy lemonsqueezy-button"
              href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0">
-            Buy $39.99
+            Buy <span class="was" data-sale>$39.99</span><span data-price>$19.99</span>
           </a>
           <a class="btn btn-ghost" href="#hear">Hear it first</a>
         </div>
@@ -1154,7 +1164,8 @@ fbq('track', 'PageView');
     <section class="band" id="buy">
       <div class="buy-card">
         <p class="eyebrow">Shizen</p>
-        <p class="price">$39.99</p>
+        <p class="price"><span class="was" data-sale>$39.99</span><span data-price>$19.99</span></p>
+        <p class="launch-note" data-sale>Black Friday sale &middot; <span data-sale-left>ends Monday at midnight PT</span></p>
         <p class="muted small" style="margin:6px auto 4px">One-time purchase, free updates</p>
 
         <ul>
@@ -1166,7 +1177,7 @@ fbq('track', 'PageView');
 
         <a class="btn btn-buy lemonsqueezy-button"
            href="https://jayusounds.lemonsqueezy.com/checkout/buy/c4462671-f0b1-47a6-9258-e3d3d8092ca2?embed=1&media=0">
-          Buy $39.99
+          Buy <span class="was" data-sale>$39.99</span><span data-price>$19.99</span>
         </a>
       </div>
     </section>
@@ -1306,12 +1317,54 @@ fbq('track', 'PageView');
      Delegated on document rather than bound per button: there are two buy
      links, and a listener on each is two things to keep in step. -->
 <script>
+/* BLACK FRIDAY 2026. The markup above is written in its SALE state, so the
+   page is right with no script at all while the sale runs; this takes it
+   back to the regular price when the deadline passes, including in a tab
+   that was left open across it. The deadline is an absolute instant -
+   midnight at the end of Monday Nov 30 in Pacific time, which is UTC-8 by
+   then - so every visitor's sale ends at the same moment whatever their own
+   clock's zone.
+
+   window.shizenSale is read by the two scripts below: the pixel reports the
+   price actually on the button, and the ad-source swap stands down while
+   the sale is on. */
+(function saleWindow() {
+  var END = Date.parse('2026-12-01T08:00:00Z');
+  var REGULAR = 39.99, SALE = 19.99;
+  window.shizenSale = { on: Date.now() < END, price: Date.now() < END ? SALE : REGULAR };
+
+  function all(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+
+  function end() {
+    window.shizenSale = { on: false, price: REGULAR };
+    all('[data-sale]').forEach(function (el) { el.parentNode.removeChild(el); });
+    all('[data-price]').forEach(function (el) { el.textContent = '$' + REGULAR.toFixed(2); });
+  }
+
+  function left(ms) {
+    var m = Math.ceil(ms / 60000), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60);
+    if (d > 0) return 'ends in ' + d + 'd ' + h + 'h';
+    if (h > 0) return 'ends in ' + h + 'h ' + (m % 60) + 'm';
+    return 'ends in ' + m + 'm';
+  }
+
+  function tick() {
+    var ms = END - Date.now();
+    if (ms <= 0) { end(); return; }
+    var text = left(ms);
+    all('[data-sale-left]').forEach(function (el) { el.textContent = text; });
+    /* never sleep past the deadline, and never longer than a minute */
+    setTimeout(tick, Math.min(ms, 60000));
+  }
+  tick();
+})();
+
 document.addEventListener('click', function (e) {
   var a = e.target && e.target.closest && e.target.closest('.lemonsqueezy-button');
   if (! a || typeof window.fbq !== 'function') return;
   window.fbq('track', 'InitiateCheckout', {
     content_name: 'Shizen',
-    value: 39.99,
+    value: window.shizenSale.price,
     currency: 'USD'
   });
 });
@@ -1345,6 +1398,13 @@ document.addEventListener('click', function (e) {
 
   var code = src && CODES[src];
   if (! code) return;
+
+  /* BLACK FRIDAY 2026: no code while the sale is on. The sale is a lower
+     price on the product itself, and REELS10 would come off THAT - an ad
+     visitor would pay $9.99. The cost is that orders from ads are not
+     tagged for these three days; the source is still remembered in
+     sessionStorage, so the swap resumes by itself afterwards. */
+  if (window.shizenSale && window.shizenSale.on) return;
 
   [].forEach.call(document.querySelectorAll('.lemonsqueezy-button'), function (a) {
     /* The href is written percent-encoded; a browser may hand it back
